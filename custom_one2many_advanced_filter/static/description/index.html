@@ -1,0 +1,395 @@
+<style>
+    .o2m-desc {
+        color: #2f2933;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        line-height: 1.65;
+    }
+
+    .o2m-desc .oe_container {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 34px 18px;
+    }
+
+    .o2m-desc .oe_row {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .o2m-desc .oe_slogan {
+        color: #714b67;
+        font-weight: 700;
+        margin: 0 0 14px;
+    }
+
+    .o2m-hero {
+        background: linear-gradient(135deg, #fbf8fc 0%, #ffffff 56%, #edf8f5 100%);
+        border: 1px solid #eee4f0;
+        border-radius: 22px;
+        padding: 52px 42px;
+        box-shadow: 0 14px 38px rgba(47, 41, 51, 0.08);
+    }
+
+    .o2m-hero h1 {
+        color: #34223a;
+        font-size: 44px;
+        font-weight: 800;
+        line-height: 1.12;
+        margin: 0 0 12px;
+    }
+
+    .o2m-hero .o2m-subtitle {
+        color: #714b67;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 18px;
+    }
+
+    .o2m-hero .o2m-lead {
+        color: #5f5364;
+        font-size: 18px;
+        max-width: 820px;
+        margin: 0;
+    }
+
+    .o2m-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(47, 41, 51, 0.11);
+    }
+
+    .o2m-section {
+        background: #ffffff;
+        border: 1px solid #efe6f1;
+        border-radius: 18px;
+        padding: 34px;
+        box-shadow: 0 10px 24px rgba(47, 41, 51, 0.06);
+    }
+
+    .o2m-section-light {
+        background: #fbf8fc;
+    }
+
+    .o2m-section h2 {
+        color: #34223a;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin: 0 0 16px;
+    }
+
+    .o2m-section p {
+        color: #5f5364;
+        font-size: 16px;
+        margin: 0 0 16px;
+    }
+
+    .o2m-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+    }
+
+    .o2m-card {
+        background: #ffffff;
+        border: 1px solid #eee4f0;
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 8px 20px rgba(47, 41, 51, 0.06);
+    }
+
+    .o2m-card h3 {
+        color: #714b67;
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0 0 8px;
+    }
+
+    .o2m-card p {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .o2m-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 18px;
+        padding: 0;
+        margin: 20px 0 0;
+        list-style: none;
+    }
+
+    .o2m-list li {
+        background: #ffffff;
+        border: 1px solid #efe6f1;
+        border-radius: 12px;
+        color: #4f4354;
+        padding: 13px 16px;
+    }
+
+    .o2m-list li:before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 10px;
+        border-radius: 50%;
+        background: #22a699;
+        vertical-align: 1px;
+    }
+
+    .o2m-screenshot-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+    }
+
+    .o2m-screenshot {
+        background: #ffffff;
+        border: 1px solid #eee4f0;
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 10px 24px rgba(47, 41, 51, 0.08);
+    }
+
+    .o2m-screenshot img {
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+    .o2m-caption {
+        color: #5f5364;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 12px 4px 2px;
+    }
+
+    .o2m-pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .o2m-pill {
+        background: #f0e5f2;
+        border-radius: 999px;
+        color: #714b67;
+        font-size: 14px;
+        font-weight: 800;
+        padding: 8px 14px;
+    }
+
+    .o2m-pill-alt {
+        background: #e5f7f3;
+        color: #22685f;
+    }
+
+    .o2m-footer {
+        background: #714b67;
+        border-radius: 20px;
+        color: #ffffff;
+        padding: 36px 24px;
+        text-align: center;
+    }
+
+    .o2m-footer h2 {
+        color: #ffffff;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.25;
+        margin: 0;
+    }
+
+    @media (max-width: 900px) {
+        .o2m-grid,
+        .o2m-screenshot-grid,
+        .o2m-list {
+            grid-template-columns: 1fr;
+        }
+
+        .o2m-hero {
+            padding: 34px 24px;
+        }
+
+        .o2m-hero h1 {
+            font-size: 34px;
+        }
+    }
+</style>
+
+<div class="o2m-desc">
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-hero">
+            <h1>One2Many Advanced Filter</h1>
+            <p class="o2m-subtitle">Smart Embedded Filtering for Odoo One2many Lines</p>
+            <p class="o2m-lead">
+                Filter invoice lines, sale order lines, purchase lines, BOM lines, stock operations,
+                and any One2many list directly inside the form view.
+            </p>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row">
+            <!-- Replace banner.png with a 1200x500 or 1200x600 production banner when real artwork is available. -->
+            <img src="banner.png" class="img-responsive o2m-image" alt="One2Many Advanced Filter banner">
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section o2m-section-light">
+            <h2 class="oe_slogan">Why Embedded Filtering Matters</h2>
+            <p>
+                Large business documents can quickly become difficult to review when every line must be
+                found by scrolling. Invoices can contain many charge lines, sales orders can include
+                hundreds of products, purchase orders can carry many vendor lines, and manufacturing or
+                inventory forms can expose long operational lists.
+            </p>
+            <ul class="o2m-list">
+                <li>Large invoices with many lines</li>
+                <li>Sales orders with hundreds of products</li>
+                <li>Purchase orders with many vendor lines</li>
+                <li>Manual scrolling wastes time</li>
+                <li>Standard One2many lists do not provide embedded filtering</li>
+                <li>Users need faster focus inside the same form view</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section">
+            <h2 class="oe_slogan">Powerful Filtering Features</h2>
+            <p>
+                A compact, native-style filter panel brings fast search and advanced filtering directly
+                to One2many list views without changing the underlying records.
+            </p>
+            <div class="o2m-grid">
+                <div class="o2m-card">
+                    <h3>Global Inline Search</h3>
+                    <p>Search across visible columns from one compact input.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Multi-field Dynamic Filtering</h3>
+                    <p>Build conditions against the fields available in the current list.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Advanced Operators</h3>
+                    <p>Use operators for text, number, boolean, date, and relational values.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>AND / OR Logic</h3>
+                    <p>Combine multiple rules to match broad or precise review workflows.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Quick Filter Chips</h3>
+                    <p>Apply frequent filters with one click for faster line review.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Display Modes</h3>
+                    <p>Hide, highlight, or dim non-matching lines based on user preference.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Sticky Compact Filter Panel</h3>
+                    <p>Keep filtering tools close to the line list while reviewing data.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>No Reload / No RPC Filtering</h3>
+                    <p>Filter on the client side without form reloads or server requests.</p>
+                </div>
+                <div class="o2m-card">
+                    <h3>Native Odoo UI</h3>
+                    <p>Designed to feel familiar inside the Odoo backend experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section o2m-section-light">
+            <h2 class="oe_slogan">Screenshots</h2>
+            <p>
+                The included images are clear placeholders. Replace them with real screenshots after
+                capturing the module inside an Odoo 19 database.
+            </p>
+            <!-- Replace screenshot_1.png, screenshot_2.png, and screenshot_3.png with 1200x700 or 1366x768 real product screenshots. -->
+            <div class="o2m-screenshot-grid">
+                <div class="o2m-screenshot">
+                    <img src="screenshot_1.png" class="img-responsive o2m-image" alt="Compact filter panel screenshot placeholder">
+                    <p class="o2m-caption">Compact filter panel</p>
+                </div>
+                <div class="o2m-screenshot">
+                    <img src="screenshot_2.png" class="img-responsive o2m-image" alt="Global search and quick chips screenshot placeholder">
+                    <p class="o2m-caption">Global search and quick chips</p>
+                </div>
+                <div class="o2m-screenshot">
+                    <img src="screenshot_3.png" class="img-responsive o2m-image" alt="Display modes screenshot placeholder">
+                    <p class="o2m-caption">Highlight, dim, and hide display modes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section">
+            <h2 class="oe_slogan">See It In Action</h2>
+            <p>
+                The demo placeholder below is intentionally small and optimized. Replace it with a real,
+                optimized GIF capture when the final demo workflow is recorded.
+            </p>
+            <!-- Replace demo.gif with an optimized live workflow GIF. Keep the final file size reasonable for Odoo Apps. -->
+            <img src="demo.gif" class="img-responsive o2m-image" alt="One2Many Advanced Filter demo GIF placeholder">
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section o2m-section-light">
+            <h2 class="oe_slogan">Performance Focused</h2>
+            <p>
+                Filtering is performed in the browser UI. It helps users focus on visible One2many rows
+                without changing saved business data or triggering unnecessary backend work.
+            </p>
+            <div class="o2m-pill-row">
+                <span class="o2m-pill">UI-only filtering</span>
+                <span class="o2m-pill o2m-pill-alt">No database writes</span>
+                <span class="o2m-pill">No RPC calls during filtering</span>
+                <span class="o2m-pill o2m-pill-alt">Original One2many data remains untouched</span>
+                <span class="o2m-pill">Optimized for large datasets</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section">
+            <h2 class="oe_slogan">Use Cases</h2>
+            <ul class="o2m-list">
+                <li>Accounting invoice and journal entry lines</li>
+                <li>Sales order product lines</li>
+                <li>Purchase order vendor lines</li>
+                <li>Inventory and stock operation lines</li>
+                <li>Manufacturing BOM and component lines</li>
+                <li>Custom One2many models</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-section o2m-section-light">
+            <h2 class="oe_slogan">Compatibility</h2>
+            <div class="o2m-pill-row">
+                <span class="o2m-pill">Odoo 19</span>
+                <span class="o2m-pill o2m-pill-alt">Generic One2many list views</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_spaced">
+        <div class="oe_row o2m-footer">
+            <h2>Stop scrolling endlessly. Start filtering smarter.</h2>
+        </div>
+    </section>
+</div>

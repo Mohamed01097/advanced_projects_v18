@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="custom_one2many_advanced_filter.Panel">
+        <div t-if="props.fields.length" class="o_o2maf border rounded-1 bg-view mb-2">
+            <div class="o_o2maf_header d-flex align-items-center gap-2 px-2 py-1">
+                <div class="o_o2maf_title_line d-flex align-items-center gap-1">
+                    <i class="fa fa-filter o_o2maf_header_icon"/>
+                    <span class="o_o2maf_title_block">
+                        <span class="o_o2maf_title">Component Filters</span>
+                        <span class="o_o2maf_subtitle">Filter lines without reloading the form</span>
+                    </span>
+                </div>
+                <div class="o_o2maf_search">
+                    <i class="fa fa-search o_o2maf_search_icon"/>
+                    <label class="visually-hidden">Search in all visible columns</label>
+                    <input
+                        type="search"
+                        class="form-control form-control-sm"
+                        placeholder="Search in all visible columns..."
+                        aria-label="Search in all visible columns"
+                        t-att-value="state.searchTerm"
+                        t-on-input="(ev) => this.onSearchInput(ev)"
+                        t-on-keydown="(ev) => this.onSearchKeydown(ev)"
+                    />
+                </div>
+                <div t-if="props.quickChips.length" class="o_o2maf_chips d-flex flex-wrap align-items-center gap-1">
+                    <button
+                        t-foreach="props.quickChips"
+                        t-as="chip"
+                        t-key="chip.id"
+                        type="button"
+                        class="btn btn-sm o_o2maf_chip"
+                        t-att-class="{
+                            'btn-primary active': this.isChipActive(chip),
+                            'btn-light': !this.isChipActive(chip)
+                        }"
+                        t-att-aria-pressed="this.isChipActive(chip) ? 'true' : 'false'"
+                        t-on-click="() => this.toggleChip(chip)"
+                    >
+                        <t t-esc="chip.label"/>
+                    </button>
+                </div>
+                <span class="o_o2maf_summary small ms-auto">
+                    <t t-esc="this.getActiveSummary()"/>
+                </span>
+                <button
+                    type="button"
+                    class="btn btn-link btn-sm o_o2maf_toggle p-0 text-decoration-none"
+                    t-att-aria-expanded="state.expanded ? 'true' : 'false'"
+                    aria-label="Toggle component filters"
+                    t-on-click="() => this.state.expanded = !this.state.expanded"
+                >
+                    <i class="fa fa-fw o_o2maf_toggle_icon" t-att-class="state.expanded ? 'fa-chevron-up' : 'fa-chevron-down'"/>
+                </button>
+            </div>
+            <div t-if="state.expanded" class="o_o2maf_body px-2 pb-1">
+                <div t-if="!props.active" class="o_o2maf_empty small text-muted">
+                    Use search or add conditions to filter the lines below.
+                </div>
+
+                <div class="o_o2maf_conditions">
+                    <div t-if="!state.conditions.length" class="o_o2maf_empty small text-muted">
+                        Add a condition to filter the lines below.
+                    </div>
+                    <div t-if="!state.conditions.length" class="o_o2maf_fallback_controls d-flex flex-wrap align-items-end gap-2">
+                        <div class="o_o2maf_cell o_o2maf_logic_cell">
+                            <label class="form-label small mb-1">Logic</label>
+                            <select class="form-select form-select-sm o_o2maf_logic" aria-label="Filter logic" t-att-value="state.logic" t-on-change="(ev) => this.state.logic = ev.target.value">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                            </select>
+                        </div>
+                        <div class="o_o2maf_cell o_o2maf_display_cell">
+                            <label class="form-label small mb-1">Display Mode</label>
+                            <select class="form-select form-select-sm o_o2maf_display_mode" aria-label="Display mode" t-att-value="state.displayMode" t-on-change="(ev) => this.onDisplayModeChange(ev)">
+                                <option value="hide">Hide non-matching lines</option>
+                                <option value="highlight">Highlight matching lines</option>
+                                <option value="dim">Dim non-matching lines</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div t-foreach="state.conditions" t-as="condition" t-key="condition.id" class="o_o2maf_condition">
+                        <div class="o_o2maf_condition_index">
+                            Condition <t t-esc="condition_index + 1"/>
+                        </div>
+                        <div class="o_o2maf_condition_controls">
+                            <div class="o_o2maf_cell o_o2maf_field_cell">
+                                <label class="form-label small mb-1">Field</label>
+                                <div class="o_o2maf_field_picker">
+                                    <input
+                                        type="search"
+                                        class="form-control form-control-sm o_o2maf_fields"
+                                        role="combobox"
+                                        autocomplete="off"
+                                        placeholder="Select field"
+                                        aria-label="Select field"
+                                        t-att-aria-expanded="condition.fieldDropdownOpen ? 'true' : 'false'"
+                                        t-att-value="this.getFieldInputValue(condition)"
+                                        t-on-focus="(ev) => this.openFieldDropdown(condition, ev)"
+                                        t-on-input="(ev) => this.onFieldInput(condition, ev)"
+                                        t-on-keydown="(ev) => this.onFieldKeydown(condition, ev)"
+                                        t-on-blur="() => this.onFieldBlur(condition)"
+                                    />
+                                    <div t-if="condition.fieldDropdownOpen" class="dropdown-menu show o_o2maf_field_menu">
+                                        <button
+                                            t-foreach="this.getFieldOptions(condition)"
+                                            t-as="field"
+                                            t-key="field.name"
+                                            type="button"
+                                            class="dropdown-item"
+                                            t-att-class="{'active': field_index === condition.highlightedFieldIndex}"
+                                            t-on-mousedown.prevent="() => this.selectField(condition, field)"
+                                        >
+                                            <t t-esc="field.label"/>
+                                        </button>
+                                        <span t-if="!this.getFieldOptions(condition).length" class="dropdown-item-text text-muted small">
+                                            No fields found
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_o2maf_cell o_o2maf_operator_cell">
+                                <label class="form-label small mb-1">Operator</label>
+                                <select t-if="!this.useBooleanValueSelect(condition)" class="form-select form-select-sm o_o2maf_operator" aria-label="Select operator" t-att-value="condition.operator" t-on-change="(ev) => this.onOperatorChange(condition, ev)">
+                                    <option t-foreach="this.getOperatorOptions(condition)" t-as="operator" t-key="operator.value" t-att-value="operator.value">
+                                        <t t-esc="operator.label"/>
+                                    </option>
+                                </select>
+                                <select t-else="" class="form-select form-select-sm o_o2maf_operator" aria-label="Operator" disabled="disabled">
+                                    <option value="=">=</option>
+                                </select>
+                            </div>
+                            <div t-if="this.conditionUsesValue(condition) || this.useBooleanValueSelect(condition)" class="o_o2maf_cell o_o2maf_value_cell">
+                                <label class="form-label small mb-1">Value</label>
+                                <select t-if="this.useBooleanValueSelect(condition)" class="form-select form-select-sm o_o2maf_value" aria-label="Select boolean value" t-att-value="this.getBooleanValue(condition)" t-on-change="(ev) => this.onBooleanValueChange(condition, ev)">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                                <select t-elif="this.useSelectionDropdown(condition)" class="form-select form-select-sm o_o2maf_value" aria-label="Select value" t-att-value="condition.value" t-on-change="(ev) => this.onValueInput(condition, ev)">
+                                    <option value="">Select value</option>
+                                    <option t-foreach="this.getSelectionOptions(condition)" t-as="option" t-key="option.value" t-att-value="option.value">
+                                        <t t-esc="option.label"/>
+                                    </option>
+                                </select>
+                                <input t-else="" class="form-control form-control-sm o_o2maf_value" aria-label="Filter value" t-att-type="this.getValueInputType(condition)" t-att-step="this.getValueInputType(condition) === 'number' ? 'any' : undefined" t-att-placeholder="this.getValuePlaceholder(condition)" t-att-value="condition.value" t-on-input="(ev) => this.onValueInput(condition, ev)" t-on-keydown="(ev) => this.onValueKeydown(condition, ev)"/>
+                            </div>
+                            <div t-if="condition_index === 0" class="o_o2maf_cell o_o2maf_logic_cell">
+                                <label class="form-label small mb-1">Logic</label>
+                                <select class="form-select form-select-sm o_o2maf_logic" aria-label="Filter logic" t-att-value="state.logic" t-on-change="(ev) => this.state.logic = ev.target.value">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                </select>
+                            </div>
+                            <div t-if="condition_index === 0" class="o_o2maf_cell o_o2maf_display_cell">
+                                <label class="form-label small mb-1">Display Mode</label>
+                                <select class="form-select form-select-sm o_o2maf_display_mode" aria-label="Display mode" t-att-value="state.displayMode" t-on-change="(ev) => this.onDisplayModeChange(ev)">
+                                    <option value="hide">Hide non-matching lines</option>
+                                    <option value="highlight">Highlight matching lines</option>
+                                    <option value="dim">Dim non-matching lines</option>
+                                </select>
+                            </div>
+                            <div class="o_o2maf_remove_cell">
+                                <button type="button" class="btn btn-light btn-sm o_o2maf_remove" t-on-click="() => this.removeCondition(condition)" title="Remove condition" aria-label="Remove condition">
+                                    <i class="fa fa-times"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="o_o2maf_actions">
+                    <button type="button" class="btn btn-light btn-sm" t-on-click="addCondition">
+                        <i class="fa fa-plus me-1"/>Add Condition
+                    </button>
+                    <div class="o_o2maf_apply_actions">
+                        <button type="button" class="btn btn-secondary btn-sm" t-on-click="reset">
+                            <i class="fa fa-undo me-1"/>Reset
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" t-on-click="apply">
+                            <i class="fa fa-filter me-1"/>Apply Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-inherit="web.X2ManyField" t-inherit-mode="extension">
+        <xpath expr="//ListRenderer" position="before">
+            <t t-if="this.o2mafCanDisplay">
+                <t t-component="this.o2mafPanelComponent" t-props="this.o2mafPanelProps"/>
+            </t>
+        </xpath>
+    </t>
+
+</templates>
