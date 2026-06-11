@@ -1,0 +1,3 @@
+<odoo>
+    <function model="dynamic.restriction.template" name="_create_default_templates"/>
+</odoo>

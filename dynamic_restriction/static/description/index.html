@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dynamic Access Manager for Odoo 17, 18, and 19. Configure user restrictions, group restrictions, company restrictions, approval workflows, audit logs, UI hiding, IP restrictions, and record rule alternatives without complexity.">
+    <title>Dynamic Access Manager | Odoo Security and Access Control</title>
+    <!--
+        Recommended Odoo Apps banner asset:
+        File: static/description/banner.png
+        Size: 1024 x 512 px
+        Content: Dynamic Access Manager, Odoo 17 | 18 | 19, Users, Groups,
+        Companies, Approvals, Audit Logs, Templates. Use a modern enterprise
+        style with clean security/access-control visuals.
+    -->
+    <style>
+        :root {
+            --dam-ink: #162033;
+            --dam-muted: #647083;
+            --dam-soft: #f5f8fb;
+            --dam-panel: #ffffff;
+            --dam-line: #dfe7ef;
+            --dam-primary: #0f766e;
+            --dam-primary-dark: #134e4a;
+            --dam-accent: #d97706;
+            --dam-accent-soft: #fff7e6;
+            --dam-success: #15803d;
+            --dam-danger: #b42318;
+            --dam-shadow: 0 18px 48px rgba(22, 32, 51, 0.10);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            color: var(--dam-ink);
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.65;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        a {
+            color: var(--dam-primary);
+            text-decoration: none;
+        }
+        .dam-page {
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 5% 0%, rgba(15, 118, 110, 0.10), transparent 28rem),
+                radial-gradient(circle at 95% 10%, rgba(217, 119, 6, 0.12), transparent 30rem),
+                #ffffff;
+        }
+        .dam-container {
+            width: min(1140px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+        .dam-section {
+            padding: 54px 0;
+        }
+        .dam-section-sm {
+            padding: 34px 0;
+        }
+        .dam-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 7px 12px;
+            border: 1px solid rgba(15, 118, 110, 0.22);
+            border-radius: 999px;
+            color: var(--dam-primary-dark);
+            background: rgba(15, 118, 110, 0.08);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .dam-hero {
+            padding: 46px 0 34px;
+        }
+        .dam-hero-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            background:
+                linear-gradient(135deg, rgba(19, 78, 74, 0.96), rgba(15, 118, 110, 0.92)),
+                url("static/description/banner.png") center / cover no-repeat;
+            color: #ffffff;
+            box-shadow: 0 28px 80px rgba(15, 78, 74, 0.28);
+        }
+        .dam-hero-card:after {
+            content: "";
+            position: absolute;
+            inset: auto -8% -38% auto;
+            width: 360px;
+            height: 360px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .dam-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            padding: 70px 58px;
+        }
+        .dam-hero h1 {
+            margin: 0 0 16px;
+            font-size: clamp(38px, 5vw, 66px);
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+        }
+        .dam-hero p {
+            margin: 0;
+            max-width: 680px;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 21px;
+            line-height: 1.55;
+        }
+        .dam-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+        .dam-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .dam-hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .dam-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-weight: 800;
+        }
+        .dam-btn-primary {
+            color: var(--dam-primary-dark);
+            background: #ffffff;
+        }
+        .dam-btn-outline {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .dam-title {
+            max-width: 790px;
+            margin-bottom: 26px;
+        }
+        .dam-title h2 {
+            margin: 0 0 12px;
+            color: var(--dam-ink);
+            font-size: clamp(28px, 3.2vw, 42px);
+            line-height: 1.14;
+            letter-spacing: -0.03em;
+        }
+        .dam-title p {
+            margin: 0;
+            color: var(--dam-muted);
+            font-size: 17px;
+        }
+        .dam-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .dam-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+        .dam-card {
+            height: 100%;
+            padding: 24px;
+            border: 1px solid var(--dam-line);
+            border-radius: 20px;
+            background: var(--dam-panel);
+            box-shadow: 0 12px 32px rgba(22, 32, 51, 0.06);
+        }
+        .dam-card h3 {
+            margin: 0 0 9px;
+            font-size: 20px;
+            line-height: 1.25;
+        }
+        .dam-card p {
+            margin: 0;
+            color: var(--dam-muted);
+            font-size: 15px;
+        }
+        .dam-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            margin-bottom: 16px;
+            border-radius: 14px;
+            color: var(--dam-primary-dark);
+            background: rgba(15, 118, 110, 0.10);
+            font-size: 18px;
+        }
+        .dam-feature-band {
+            border: 1px solid var(--dam-line);
+            border-radius: 26px;
+            background: linear-gradient(180deg, #ffffff, var(--dam-soft));
+            box-shadow: var(--dam-shadow);
+            overflow: hidden;
+        }
+        .dam-feature-row {
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 0;
+            align-items: stretch;
+        }
+        .dam-feature-copy {
+            padding: 36px;
+        }
+        .dam-feature-copy h3 {
+            margin: 0 0 12px;
+            font-size: 28px;
+            line-height: 1.18;
+            letter-spacing: -0.02em;
+        }
+        .dam-feature-copy p {
+            margin: 0 0 16px;
+            color: var(--dam-muted);
+        }
+        .dam-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .dam-list li {
+            position: relative;
+            margin: 10px 0;
+            padding-left: 28px;
+            color: var(--dam-muted);
+        }
+        .dam-list li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.72em;
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: var(--dam-primary);
+            transform: translateY(-50%);
+        }
+        .dam-shot {
+            min-height: 100%;
+            padding: 24px;
+            background: #eef5f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dam-shot img {
+            border-radius: 18px;
+            box-shadow: 0 16px 44px rgba(22, 32, 51, 0.16);
+        }
+        .dam-soft {
+            background: var(--dam-soft);
+        }
+        .dam-kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 22px;
+        }
+        .dam-kpi {
+            padding: 18px;
+            border-radius: 18px;
+            background: #ffffff;
+            border: 1px solid var(--dam-line);
+        }
+        .dam-kpi strong {
+            display: block;
+            color: var(--dam-primary-dark);
+            font-size: 24px;
+            line-height: 1;
+        }
+        .dam-kpi span {
+            display: block;
+            margin-top: 8px;
+            color: var(--dam-muted);
+            font-size: 14px;
+        }
+        .dam-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .dam-gallery-card {
+            overflow: hidden;
+            border: 1px solid var(--dam-line);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 12px 30px rgba(22, 32, 51, 0.06);
+        }
+        .dam-gallery-card img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: var(--dam-soft);
+        }
+        .dam-gallery-card div {
+            padding: 14px 16px 16px;
+            font-weight: 800;
+        }
+        .dam-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--dam-line);
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 12px 32px rgba(22, 32, 51, 0.06);
+        }
+        .dam-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+        .dam-table th,
+        .dam-table td {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--dam-line);
+            text-align: left;
+            vertical-align: top;
+        }
+        .dam-table th {
+            color: var(--dam-ink);
+            background: var(--dam-soft);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .dam-table tr:last-child td {
+            border-bottom: 0;
+        }
+        .dam-check {
+            color: var(--dam-success);
+            font-weight: 900;
+        }
+        .dam-limited {
+            color: var(--dam-accent);
+            font-weight: 900;
+        }
+        .dam-no {
+            color: var(--dam-danger);
+            font-weight: 900;
+        }
+        .dam-seo {
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px dashed rgba(15, 118, 110, 0.36);
+            background: rgba(15, 118, 110, 0.06);
+            color: var(--dam-muted);
+        }
+        .dam-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .dam-tag {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid var(--dam-line);
+            color: var(--dam-primary-dark);
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .dam-support {
+            padding: 34px;
+            border-radius: 26px;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 100% 0%, rgba(217, 119, 6, 0.28), transparent 24rem),
+                linear-gradient(135deg, var(--dam-primary-dark), #0b3f3b);
+            box-shadow: var(--dam-shadow);
+        }
+        .dam-support h2,
+        .dam-support p {
+            color: #ffffff;
+        }
+        .dam-support p {
+            opacity: 0.88;
+        }
+        .dam-footer {
+            padding: 30px 0 46px;
+            text-align: center;
+            color: var(--dam-muted);
+            font-size: 14px;
+        }
+        .dam-footer strong {
+            color: var(--dam-ink);
+        }
+        @media (max-width: 980px) {
+            .dam-grid,
+            .dam-gallery,
+            .dam-kpi-strip {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .dam-feature-row,
+            .dam-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            .dam-container {
+                width: min(100% - 22px, 1140px);
+            }
+            .dam-section {
+                padding: 38px 0;
+            }
+            .dam-hero-content {
+                padding: 42px 24px;
+            }
+            .dam-hero p {
+                font-size: 17px;
+            }
+            .dam-grid,
+            .dam-gallery,
+            .dam-kpi-strip {
+                grid-template-columns: 1fr;
+            }
+            .dam-card,
+            .dam-feature-copy,
+            .dam-support {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dam-page">
+    <header class="dam-hero">
+        <div class="dam-container">
+            <div class="dam-hero-card">
+                <div class="dam-hero-content">
+                    <span class="dam-eyebrow"><i class="fa fa-shield"></i> Odoo Security Framework</span>
+                    <h1>Dynamic Access Manager</h1>
+                    <p>Take Full Control of Odoo Security Without Complexity</p>
+                    <div class="dam-badges">
+                        <span class="dam-badge"><i class="fa fa-check-circle"></i> Odoo 17</span>
+                        <span class="dam-badge"><i class="fa fa-check-circle"></i> Odoo 18</span>
+                        <span class="dam-badge"><i class="fa fa-check-circle"></i> Odoo 19</span>
+                        <span class="dam-badge"><i class="fa fa-lock"></i> Backend Enforced</span>
+                    </div>
+                    <div class="dam-hero-actions">
+                        <a class="dam-btn dam-btn-primary" href="#features">Explore Features</a>
+                        <a class="dam-btn dam-btn-outline" href="#support">Get Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="dam-section-sm">
+        <div class="dam-container">
+            <div class="dam-kpi-strip">
+                <div class="dam-kpi"><strong>17 | 18 | 19</strong><span>Supported Odoo versions</span></div>
+                <div class="dam-kpi"><strong>Users</strong><span>Apply rules to selected users</span></div>
+                <div class="dam-kpi"><strong>Groups</strong><span>Secure teams and departments</span></div>
+                <div class="dam-kpi"><strong>Audit</strong><span>Track blocked actions</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section" id="benefits">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-star"></i> Key Benefits</span>
+                <h2>Enterprise-grade access control without custom development.</h2>
+                <p>Dynamic Access Manager helps functional administrators manage sensitive Odoo operations from a clean configuration screen while keeping backend validation as the source of truth.</p>
+            </div>
+            <div class="dam-grid">
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-lock"></i></span><h3>Reduce security risk</h3><p>Prevent unauthorized edits, deletes, exports, imports, archive actions, and bulk operations across business models.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-sliders"></i></span><h3>Configure without code</h3><p>Build rules for users, groups, companies, ownership, domains, time windows, and IP addresses from Odoo screens.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-check-square-o"></i></span><h3>Approve instead of block</h3><p>Route sensitive operations through approval requests when the business requires control with operational flexibility.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft" id="features">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-th-large"></i> Features Overview</span>
+                <h2>One module for advanced Odoo permissions, approvals, and auditability.</h2>
+                <p>Use Dynamic Access Manager as an Odoo record rules alternative for action-level restrictions, UI guidance, and compliance visibility.</p>
+            </div>
+            <div class="dam-grid">
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-ban"></i></span><h3>Dynamic Restrictions</h3><p>Control create, edit, delete, duplicate, export, import, archive, unarchive, and mass actions for any supported model.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-users"></i></span><h3>Group Restrictions</h3><p>Apply access policies to sales, accounting, warehouse, HR, or management groups without rewriting access rights.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-building"></i></span><h3>Company Restrictions</h3><p>Keep multi-company operations safe by applying restrictions only to selected companies or globally across companies.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-code-fork"></i></span><h3>Domain / State Restrictions</h3><p>Restrict actions only when records match business conditions such as confirmed orders, posted invoices, or closed leads.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-user"></i></span><h3>Own Documents Only</h3><p>Limit users to documents where a configured owner field matches the current user, such as salesperson or responsible user.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-random"></i></span><h3>Approval Workflow</h3><p>Create approval requests for edit, delete, duplicate, or archive actions and execute approved operations safely.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-list-alt"></i></span><h3>Audit Logs</h3><p>Record blocked actions with user, model, record, action type, company, timestamp, and reason for review.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-eye-slash"></i></span><h3>UI Button Hiding</h3><p>Hide New, Edit, Delete, Duplicate, Export, Archive, and related actions when restrictions apply.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-pencil-square-o"></i></span><h3>Readonly Fields</h3><p>Protect sensitive fields while keeping the remaining record editable for normal business operations.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-clock-o"></i></span><h3>Time Restrictions</h3><p>Allow sensitive actions only on approved weekdays and during configured business hours.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-map-marker"></i></span><h3>IP Restrictions</h3><p>Restrict operations by office IP address or CIDR network for stronger operational security.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-copy"></i></span><h3>Restriction Templates</h3><p>Deploy reusable security templates for common business roles and speed up implementation.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section">
+        <div class="dam-container">
+            <div class="dam-feature-band">
+                <div class="dam-feature-row">
+                    <div class="dam-feature-copy">
+                        <span class="dam-eyebrow"><i class="fa fa-ban"></i> Dynamic Restrictions</span>
+                        <h3>Block risky actions where standard access rights are too broad.</h3>
+                        <p>Standard Odoo security is powerful, but business teams often need action-level restrictions that change by state, user, company, or context. Dynamic Access Manager adds that control without model-specific custom code.</p>
+                        <ul class="dam-list">
+                            <li>Prevent create, edit, delete, duplicate, archive, import, and export actions.</li>
+                            <li>Protect critical workflows after records reach confirmed, posted, or closed states.</li>
+                            <li>Keep backend validation active even when users bypass the web interface.</li>
+                        </ul>
+                    </div>
+                    <div class="dam-shot">
+                        <!-- Screenshot placeholder: replace with a real Restrictions configuration screen if available. -->
+                        <img src="static/description/screenshot_01_restrictions.png" alt="Dynamic restrictions configuration screenshot">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft">
+        <div class="dam-container">
+            <div class="dam-grid-2">
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-users"></i></span><h3>Group Restrictions</h3><p>Apply rules to entire teams. For example, allow sales managers to edit confirmed sales orders while preventing salespersons from changing them after confirmation.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-building-o"></i></span><h3>Company Restrictions</h3><p>Secure multi-company environments by applying restrictions only where they are relevant. Company-specific rules keep local policies independent.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-filter"></i></span><h3>Domain / State Restrictions</h3><p>Use domain conditions to restrict only matching records, such as posted invoices, won opportunities, validated stock pickings, or confirmed purchase orders.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-id-badge"></i></span><h3>Own Documents Only</h3><p>Restrict users to documents they own by selecting a responsible user field. This is useful for sales teams, support agents, recruiters, and account managers.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section">
+        <div class="dam-container">
+            <div class="dam-grid-2">
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-check-circle"></i></span><h3>Approval Workflow</h3><p>Convert high-risk actions into approval requests. Approvers can review the request, execute the approved action, or reject it according to company policy.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-history"></i></span><h3>Audit Logs</h3><p>Every blocked operation can be reviewed later with clear context: user, action, model, record, company, restriction, and reason.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-eye-slash"></i></span><h3>UI Button Hiding</h3><p>Improve usability by hiding restricted actions from the Odoo backend. Users see only the actions they are expected to perform.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-lock"></i></span><h3>Readonly Fields</h3><p>Protect sensitive fields such as price, discount, salesperson, payment terms, or analytic values while allowing safe fields to remain editable.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-shield"></i> Advanced Protection</span>
+                <h2>Control when, where, and how sensitive actions are allowed.</h2>
+            </div>
+            <div class="dam-grid">
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-clock-o"></i></span><h3>Time Restrictions</h3><p>Limit risky actions to approved workdays and time windows. Useful for closing periods, after-hours controls, and operational governance.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-map-marker"></i></span><h3>IP Restrictions</h3><p>Allow sensitive operations only from trusted office IP addresses or approved network ranges.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-download"></i></span><h3>Import / Export Protection</h3><p>Prevent unauthorized imports and exports to protect master data, customer lists, financial information, and confidential business records.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-tasks"></i></span><h3>Mass Action Protection</h3><p>Prevent bulk edit, delete, and archive operations that could impact large record sets from list views.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-copy"></i></span><h3>Restriction Templates</h3><p>Package repeatable controls into templates and apply them quickly across business units or implementation projects.</p></div>
+                <div class="dam-card"><span class="dam-icon"><i class="fa fa-database"></i></span><h3>Backend First</h3><p>UI hiding improves experience, but backend validation remains the enforcement layer for RPC, import, automation, and direct calls.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section" id="scenarios">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-briefcase"></i> Real Business Scenarios</span>
+                <h2>Built for practical security needs in daily Odoo operations.</h2>
+            </div>
+            <div class="dam-grid">
+                <div class="dam-card"><h3>Prevent editing confirmed Sales Orders</h3><p>Protect commercial commitments after confirmation while still allowing managers to approve exceptions.</p></div>
+                <div class="dam-card"><h3>Prevent deleting posted Invoices</h3><p>Keep accounting data compliant by blocking deletes after posting and logging attempted actions.</p></div>
+                <div class="dam-card"><h3>Restrict salespersons to their own Leads</h3><p>Use Own Documents Only rules so salespeople only work on assigned CRM opportunities.</p></div>
+                <div class="dam-card"><h3>Require approval before deleting CRM Opportunities</h3><p>Allow sensitive cleanup only after management review and approval execution.</p></div>
+                <div class="dam-card"><h3>Restrict access by company</h3><p>Apply different action policies for each legal entity in a multi-company database.</p></div>
+                <div class="dam-card"><h3>Restrict actions by office IP</h3><p>Allow exports, deletes, or administrative edits only from approved corporate networks.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft" id="why">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-thumbs-up"></i> Why Choose Dynamic Access Manager</span>
+                <h2>A professional alternative to scattered custom access logic.</h2>
+                <p>Centralize Odoo access management into a configurable module that is easier to audit, easier to maintain, and easier to hand over to functional teams.</p>
+            </div>
+            <div class="dam-grid">
+                <div class="dam-card"><h3>Faster implementation</h3><p>Configure common security policies without writing Python, XML record rules, or custom controller logic.</p></div>
+                <div class="dam-card"><h3>Clear governance</h3><p>Use approval workflows and audit logs to make sensitive operations visible and accountable.</p></div>
+                <div class="dam-card"><h3>Operational flexibility</h3><p>Block, hide, approve, or log actions based on real business policies instead of one-size-fits-all permissions.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section" id="technical">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-cogs"></i> Technical Features</span>
+                <h2>Designed for Odoo administrators, consultants, and implementation partners.</h2>
+            </div>
+            <div class="dam-grid-2">
+                <div class="dam-card"><h3>Model-agnostic framework</h3><p>Apply policies across Odoo models using standard `ir.model` configuration.</p></div>
+                <div class="dam-card"><h3>Server-side enforcement</h3><p>Restrictions run in backend create, write, unlink, copy, archive, import, export, and mass action paths.</p></div>
+                <div class="dam-card"><h3>Odoo 17 | 18 | 19 ready</h3><p>Marketing and implementation structure prepared for supported version branches.</p></div>
+                <div class="dam-card"><h3>Professional UX</h3><p>Backend UI hiding reduces user confusion while keeping server-side security in control.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft" id="comparison">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-columns"></i> Comparison</span>
+                <h2>Standard Odoo vs Dynamic Access Manager</h2>
+            </div>
+            <div class="dam-table-wrap">
+                <table class="dam-table">
+                    <thead>
+                    <tr><th>Capability</th><th>Standard Odoo</th><th>Dynamic Access Manager</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>User Restrictions</td><td><span class="dam-limited">Limited</span> through access rights and record rules</td><td><span class="dam-check">Advanced</span> user-specific action restrictions</td></tr>
+                    <tr><td>Group Restrictions</td><td><span class="dam-limited">Basic</span> access group design</td><td><span class="dam-check">Flexible</span> group-level business policies</td></tr>
+                    <tr><td>Approval Workflow</td><td><span class="dam-no">Not standard</span> for restricted actions</td><td><span class="dam-check">Built in</span> for edit, delete, duplicate, archive</td></tr>
+                    <tr><td>Audit Logs</td><td><span class="dam-limited">Scattered</span> across chatter or logs</td><td><span class="dam-check">Dedicated</span> restriction audit trail</td></tr>
+                    <tr><td>Own Documents</td><td><span class="dam-limited">Requires</span> record rule setup</td><td><span class="dam-check">Configurable</span> owner field policy</td></tr>
+                    <tr><td>UI Hiding</td><td><span class="dam-limited">View-specific</span> and static</td><td><span class="dam-check">Dynamic</span> action hiding by restriction</td></tr>
+                    <tr><td>IP Restrictions</td><td><span class="dam-no">Not standard</span></td><td><span class="dam-check">Supported</span> IP and CIDR controls</td></tr>
+                    <tr><td>Time Restrictions</td><td><span class="dam-no">Not standard</span></td><td><span class="dam-check">Supported</span> weekday and time windows</td></tr>
+                    <tr><td>Templates</td><td><span class="dam-no">Not standard</span></td><td><span class="dam-check">Reusable</span> restriction templates</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section" id="seo">
+        <div class="dam-container">
+            <div class="dam-seo">
+                <h2>Odoo Apps SEO</h2>
+                <p>Dynamic Access Manager is built for teams searching for stronger Odoo Security, Odoo Access Rights management, Odoo Permissions control, an Odoo Record Rules Alternative, Odoo Approval Workflow, Odoo User Restrictions, Odoo Group Restrictions, and Odoo Audit Logs.</p>
+                <div class="dam-tags">
+                    <span class="dam-tag">Odoo Security</span>
+                    <span class="dam-tag">Odoo Access Rights</span>
+                    <span class="dam-tag">Odoo Permissions</span>
+                    <span class="dam-tag">Odoo Record Rules Alternative</span>
+                    <span class="dam-tag">Odoo Approval Workflow</span>
+                    <span class="dam-tag">Odoo User Restrictions</span>
+                    <span class="dam-tag">Odoo Group Restrictions</span>
+                    <span class="dam-tag">Odoo Audit Logs</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section dam-soft" id="screenshots">
+        <div class="dam-container">
+            <div class="dam-title">
+                <span class="dam-eyebrow"><i class="fa fa-picture-o"></i> Screenshots Gallery</span>
+                <h2>Professional screenshot structure for Odoo Apps publication.</h2>
+                <p>The referenced files are included in static/description. If live environment captures are available, replace these files using the same filenames.</p>
+            </div>
+            <!-- Screenshot placeholders: replace files with real UI captures when available. Keep filenames unchanged for Odoo Apps references. -->
+            <div class="dam-gallery">
+                <div class="dam-gallery-card"><img src="static/description/screenshot_01_restrictions.png" alt="Restrictions screenshot"><div>Restrictions</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_02_group_restrictions.png" alt="Group restrictions screenshot"><div>Group Restrictions</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_03_company_restrictions.png" alt="Company restrictions screenshot"><div>Company Restrictions</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_04_state_restrictions.png" alt="State restrictions screenshot"><div>Domain / State Rules</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_05_own_documents.png" alt="Own documents screenshot"><div>Own Documents Only</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_06_ui_hiding.png" alt="UI hiding screenshot"><div>UI Button Hiding</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_07_approval_requests.png" alt="Approval requests screenshot"><div>Approval Requests</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_08_audit_logs.png" alt="Audit logs screenshot"><div>Audit Logs</div></div>
+                <div class="dam-gallery-card"><img src="static/description/screenshot_09_templates.png" alt="Restriction templates screenshot"><div>Restriction Templates</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section">
+        <div class="dam-container">
+            <div class="dam-feature-band">
+                <div class="dam-feature-row">
+                    <div class="dam-feature-copy">
+                        <span class="dam-eyebrow"><i class="fa fa-play-circle"></i> Animated Demo</span>
+                        <h3>Demonstrate the complete restriction lifecycle.</h3>
+                        <p>Use the animated demo to show configuration, UI hiding, approval requests, audit logs, and templates in a compact Odoo Apps preview.</p>
+                    </div>
+                    <div class="dam-shot">
+                        <!-- Animated demo placeholder: replace with a current product walkthrough GIF if available. -->
+                        <img src="static/description/animated_demo.gif" alt="Dynamic Access Manager animated demo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dam-section" id="support">
+        <div class="dam-container">
+            <div class="dam-support">
+                <span class="dam-eyebrow"><i class="fa fa-life-ring"></i> Support Section</span>
+                <h2>Professional support for implementation and customization.</h2>
+                <p>BSMA Developers can assist with installation, configuration, version migration, custom restriction scenarios, approval extensions, and enterprise security consulting for Odoo 17, 18, and 19.</p>
+                <div class="dam-hero-actions">
+                    <a class="dam-btn dam-btn-primary" href="https://www.bsmadevelopers.com">Visit BSMA Developers</a>
+                    <a class="dam-btn dam-btn-outline" href="mailto:support@bsmadevelopers.com">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="dam-footer">
+        <div class="dam-container">
+            <strong>Dynamic Access Manager</strong> by <strong>BSMA Developers</strong><br>
+            Premium Odoo security, permissions, approvals, and audit control for Odoo 17 | 18 | 19.
+        </div>
+    </footer>
+</div>
+</body>
+</html>

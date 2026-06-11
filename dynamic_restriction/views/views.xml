@@ -1,0 +1,388 @@
+<odoo>
+    <data>
+
+        <!-- Odoo 18 uses <list> architecture and list,form view_mode; keep legacy dinemic_* external IDs so existing databases upgrade without orphaned XML references. -->
+        <record model="ir.ui.view" id="dinemic_restriction_list">
+            <field name="name">user.restrict.list.dynamic.restrictions</field>
+            <field name="model">user.restrict</field>
+            <field name="arch" type="xml">
+                <list string="Dynamic Restrictions">
+                    <field name="active" optional="show"/>
+                    <field name="name"/>
+                    <field name="model_ids" widget="many2many_tags"/>
+                    <field name="user_ids" widget="many2many_tags"/>
+                    <field name="group_ids" widget="many2many_tags"/>
+                    <field name="company_ids" widget="many2many_tags"/>
+                    <field name="use_domain" optional="hide"/>
+                    <field name="own_documents_only" optional="hide"/>
+                    <field name="prevent_readonly_fields" optional="hide"/>
+                    <field name="require_approval" optional="hide"/>
+                    <field name="use_time_restriction" optional="hide"/>
+                    <field name="use_ip_restriction" optional="hide"/>
+                    <field name="hide_restricted_buttons" optional="hide"/>
+                    <field name="prevent_create" optional="hide"/>
+                    <field name="prevent_edit" optional="show"/>
+                    <field name="prevent_delete" optional="hide"/>
+                    <field name="prevent_duplicate" optional="hide"/>
+                    <field name="prevent_export" optional="hide"/>
+                    <field name="prevent_archive" optional="hide"/>
+                    <field name="prevent_import" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="dinemic_restriction_form">
+            <field name="name">user.restrict.form.dynamic.restrictions</field>
+            <field name="model">user.restrict</field>
+            <field name="arch" type="xml">
+                <form string="Dynamic Restrictions">
+                    <sheet>
+                        <group>
+                            <group string="Restriction">
+                                <field name="name"/>
+                                <field name="active"/>
+                                <field name="description" placeholder="Internal note about why this restriction exists."/>
+                            </group>
+                            <group string="Scope">
+                                <field name="model_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="group_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="company_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       help="Leave empty to apply in all companies."/>
+                            </group>
+                        </group>
+                        <group string="Blocked Actions" col="4">
+                            <field name="prevent_create"/>
+                            <field name="prevent_edit"/>
+                            <field name="prevent_delete"/>
+                            <field name="prevent_duplicate"/>
+                            <field name="prevent_export"/>
+                            <field name="prevent_archive"/>
+                            <field name="prevent_import"/>
+                        </group>
+                        <group string="Mass Actions" col="3">
+                            <field name="prevent_mass_edit"/>
+                            <field name="prevent_mass_delete"/>
+                            <field name="prevent_mass_archive"/>
+                        </group>
+                        <group string="Readonly Fields">
+                            <field name="prevent_readonly_fields"/>
+                            <field name="readonly_field_ids"
+                                   widget="many2many_tags"
+                                   invisible="not prevent_readonly_fields"
+                                   domain="[('model_id', 'in', model_ids), ('store', '=', True), ('name', 'not in', ['id', 'create_uid', 'create_date', 'write_uid', 'write_date'])]"
+                                   options="{'no_create': True}"
+                                   help="Only writes to these fields are blocked; other fields remain editable."/>
+                        </group>
+                        <group string="Approval Required">
+                            <field name="require_approval"/>
+                            <field name="approval_action_ids"
+                                   widget="many2many_tags"
+                                   invisible="not require_approval"
+                                   options="{'no_create': True}"
+                                   help="These actions create an approval request instead of being executed immediately."/>
+                        </group>
+                        <group string="Conditional Restriction">
+                            <field name="use_domain"/>
+                            <field name="domain_force"
+                                   invisible="not use_domain"
+                                   placeholder="[('state', '=', 'sale')]"
+                                   help="Example: [('state', '=', 'sale')]"/>
+                        </group>
+                        <group string="Own Documents">
+                            <field name="own_documents_only"/>
+                            <field name="owner_field_id"
+                                   invisible="not own_documents_only"
+                                   required="own_documents_only"
+                                   domain="[('model_id', 'in', model_ids), ('ttype', '=', 'many2one'), ('relation', '=', 'res.users')]"
+                                   options="{'no_create': True}"
+                                   help="Restrict users to records where the selected owner field equals the current user."/>
+                        </group>
+                        <group string="Time Restriction">
+                            <field name="use_time_restriction"/>
+                            <field name="allowed_weekday_ids"
+                                   widget="many2many_tags"
+                                   invisible="not use_time_restriction"
+                                   options="{'no_create': True}"
+                                   help="Leave empty to use all weekdays."/>
+                            <field name="time_from" invisible="not use_time_restriction" widget="float_time"/>
+                            <field name="time_to" invisible="not use_time_restriction" widget="float_time"/>
+                            <field name="timezone_mode" invisible="not use_time_restriction"/>
+                        </group>
+                        <group string="IP Restriction">
+                            <field name="use_ip_restriction"/>
+                            <field name="allowed_ip_ranges"
+                                   invisible="not use_ip_restriction"
+                                   placeholder="192.168.1.10&#10;192.168.1.0/24"
+                                   help="One IP or CIDR range per line."/>
+                        </group>
+                        <group string="User Interface">
+                            <field name="hide_restricted_buttons"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="dinemic_restriction_action_window">
+            <field name="name">Restrictions</field>
+            <field name="res_model">user.restrict</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="view_dynamic_restriction_log_tree" model="ir.ui.view">
+            <field name="name">dynamic.restriction.log.list</field>
+            <field name="model">dynamic.restriction.log</field>
+            <field name="arch" type="xml">
+                <list string="Audit Logs" create="0" edit="0">
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="action_name"/>
+                    <field name="model_description"/>
+                    <field name="record_name"/>
+                    <field name="restriction_id"/>
+                    <field name="company_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_dynamic_restriction_log_form" model="ir.ui.view">
+            <field name="name">dynamic.restriction.log.form</field>
+            <field name="model">dynamic.restriction.log</field>
+            <field name="arch" type="xml">
+                <form string="Audit Log" create="0" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="company_id"/>
+                            <field name="action_name"/>
+                            <field name="restriction_id"/>
+                        </group>
+                        <group>
+                            <field name="model_name"/>
+                            <field name="model_description"/>
+                            <field name="record_id"/>
+                            <field name="record_name"/>
+                        </group>
+                        <field name="reason"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_dynamic_restriction_log" model="ir.actions.act_window">
+            <field name="name">Audit Logs</field>
+            <field name="res_model">dynamic.restriction.log</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="view_dynamic_restriction_approval_tree" model="ir.ui.view">
+            <field name="name">dynamic.restriction.approval.list</field>
+            <field name="model">dynamic.restriction.approval</field>
+            <field name="arch" type="xml">
+                <list string="Approval Requests" create="0">
+                    <field name="request_date"/>
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="action_name"/>
+                    <field name="model_description"/>
+                    <field name="record_name"/>
+                    <field name="state"/>
+                    <field name="reviewed_by"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_dynamic_restriction_approval_form" model="ir.ui.view">
+            <field name="name">dynamic.restriction.approval.form</field>
+            <field name="model">dynamic.restriction.approval</field>
+            <field name="arch" type="xml">
+                <form string="Approval Request" create="0">
+                    <header>
+                        <button name="action_approve" type="object" string="Approve" class="btn-primary" groups="base.group_system" invisible="state != 'pending'"/>
+                        <button name="action_reject" type="object" string="Reject" groups="base.group_system" invisible="state != 'pending'"/>
+                        <button name="action_cancel" type="object" string="Cancel" invisible="state != 'pending'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="pending,approved,rejected,cancelled"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="request_date" readonly="1"/>
+                            <field name="restriction_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="action_name" readonly="1"/>
+                            <field name="model_name" readonly="1"/>
+                            <field name="model_description" readonly="1"/>
+                            <field name="record_id" readonly="1"/>
+                            <field name="record_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="reviewed_by" readonly="1"/>
+                            <field name="review_date" readonly="1"/>
+                        </group>
+                        <field name="vals_json" readonly="1"/>
+                        <field name="rejection_reason"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_dynamic_restriction_approval" model="ir.actions.act_window">
+            <field name="name">Approval Requests</field>
+            <field name="res_model">dynamic.restriction.approval</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="view_dynamic_restriction_template_tree" model="ir.ui.view">
+            <field name="name">dynamic.restriction.template.list</field>
+            <field name="model">dynamic.restriction.template</field>
+            <field name="arch" type="xml">
+                <list string="Restriction Templates">
+                    <field name="name"/>
+                    <field name="description"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_dynamic_restriction_template_form" model="ir.ui.view">
+            <field name="name">dynamic.restriction.template.form</field>
+            <field name="model">dynamic.restriction.template</field>
+            <field name="arch" type="xml">
+                <form string="Restriction Template">
+                    <header>
+                        <button name="action_open_apply_wizard" type="object" string="Apply Template" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                        </group>
+                        <field name="line_ids">
+                            <list editable="bottom">
+                                <field name="model_id" options="{'no_create': True}"/>
+                                <field name="prevent_create"/>
+                                <field name="prevent_edit"/>
+                                <field name="prevent_delete"/>
+                                <field name="prevent_duplicate"/>
+                                <field name="prevent_export"/>
+                                <field name="prevent_archive"/>
+                                <field name="prevent_import"/>
+                                <field name="own_documents_only"/>
+                                <field name="owner_field_id" domain="[('model_id', '=', model_id), ('ttype', '=', 'many2one'), ('relation', '=', 'res.users')]" options="{'no_create': True}"/>
+                                <field name="use_domain"/>
+                                <field name="domain_force"/>
+                            </list>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_dynamic_restriction_template" model="ir.actions.act_window">
+            <field name="name">Templates</field>
+            <field name="res_model">dynamic.restriction.template</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="view_dynamic_restriction_apply_template_wizard_form" model="ir.ui.view">
+            <field name="name">dynamic.restriction.apply.template.wizard.form</field>
+            <field name="model">dynamic.restriction.apply.template.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Apply Restriction Template">
+                    <group>
+                        <field name="template_id" options="{'no_create': True}"/>
+                        <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="group_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="company_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                    <footer>
+                        <button name="action_apply_template" type="object" string="Apply" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_dynamic_restriction_weekday_tree" model="ir.ui.view">
+            <field name="name">dynamic.restriction.weekday.list</field>
+            <field name="model">dynamic.restriction.weekday</field>
+            <field name="arch" type="xml">
+                <list string="Weekdays">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_dynamic_restriction_weekday" model="ir.actions.act_window">
+            <field name="name">Weekdays</field>
+            <field name="res_model">dynamic.restriction.weekday</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="view_dynamic_restriction_approval_action_tree" model="ir.ui.view">
+            <field name="name">dynamic.restriction.approval.action.list</field>
+            <field name="model">dynamic.restriction.approval.action</field>
+            <field name="arch" type="xml">
+                <list string="Approval Actions">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_dynamic_restriction_approval_action" model="ir.actions.act_window">
+            <field name="name">Approval Actions</field>
+            <field name="res_model">dynamic.restriction.approval.action</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem name="Dynamic Access Manager"
+                  id="dinemic_restriction_menu_root"
+                  web_icon="dynamic_restriction,static/description/icon.png"
+                  groups="base.group_user"/>
+
+        <menuitem name="Restrictions" id="dinemic_restriction_menu_root_sub"
+                  parent="dinemic_restriction_menu_root"
+                  action="dinemic_restriction_action_window"
+                  groups="base.group_system"/>
+
+        <menuitem name="Templates" id="dynamic_restriction_menu_templates"
+                  parent="dinemic_restriction_menu_root"
+                  action="action_dynamic_restriction_template"
+                  groups="base.group_system"/>
+
+        <menuitem name="Approval Requests" id="dynamic_restriction_menu_approvals"
+                  parent="dinemic_restriction_menu_root"
+                  action="action_dynamic_restriction_approval"
+                  groups="base.group_user"/>
+
+        <menuitem name="Audit Logs" id="dynamic_restriction_menu_logs"
+                  parent="dinemic_restriction_menu_root"
+                  action="action_dynamic_restriction_log"
+                  groups="base.group_system"/>
+
+        <menuitem name="Configuration" id="dynamic_restriction_menu_configuration"
+                  parent="dinemic_restriction_menu_root"
+                  groups="base.group_system"/>
+
+        <menuitem name="Weekdays" id="dynamic_restriction_menu_weekdays"
+                  parent="dynamic_restriction_menu_configuration"
+                  action="action_dynamic_restriction_weekday"
+                  groups="base.group_system"/>
+
+        <menuitem name="Approval Actions" id="dynamic_restriction_menu_approval_actions"
+                  parent="dynamic_restriction_menu_configuration"
+                  action="action_dynamic_restriction_approval_action"
+                  groups="base.group_system"/>
+
+    </data>
+</odoo>

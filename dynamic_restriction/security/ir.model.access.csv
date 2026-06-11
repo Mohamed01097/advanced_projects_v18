@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_user_restrict,user.restrict,model_user_restrict,base.group_system,1,1,1,1
+access_dynamic_restriction_log_admin,dynamic.restriction.log.admin,model_dynamic_restriction_log,base.group_system,1,0,0,0
+access_dynamic_restriction_approval_user,dynamic.restriction.approval.user,model_dynamic_restriction_approval,base.group_user,1,1,0,0
+access_dynamic_restriction_approval_admin,dynamic.restriction.approval.admin,model_dynamic_restriction_approval,base.group_system,1,1,1,1
+access_dynamic_restriction_template_admin,dynamic.restriction.template.admin,model_dynamic_restriction_template,base.group_system,1,1,1,1
+access_dynamic_restriction_template_line_admin,dynamic.restriction.template.line.admin,model_dynamic_restriction_template_line,base.group_system,1,1,1,1
+access_dynamic_restriction_apply_template_wizard_admin,dynamic.restriction.apply.template.wizard.admin,model_dynamic_restriction_apply_template_wizard,base.group_system,1,1,1,1
+access_dynamic_restriction_weekday_admin,dynamic.restriction.weekday.admin,model_dynamic_restriction_weekday,base.group_system,1,1,1,1
+access_dynamic_restriction_approval_action_admin,dynamic.restriction.approval.action.admin,model_dynamic_restriction_approval_action,base.group_system,1,1,1,1
