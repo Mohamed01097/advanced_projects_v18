@@ -27,7 +27,7 @@ Compatible with Odoo 18. Preserves the feature set of the original Odoo 17 imple
     'version': '18.0.1.1.0',
     'price': '50.0',
     'currency': 'USD',
-    'depends': ['base', 'web', 'base_import'],
+    'depends': ['base', 'web', 'mail'],
     'images': [
         'static/description/banner.png',
         'static/description/screenshot_01_restrictions.png',

@@ -328,20 +328,24 @@ class UserRestriction(models.Model):
         self.env.registry.clear_cache()
 
     @api.model
-    def get_ui_restrictions(self, model_name, record_ids=None):
-        result = {field_name: False for field_name in UI_ACTION_FIELDS.values()}
-        Model = self.env.get(model_name)
-        if not Model or Model._skip_dynamic_restriction():
+    def get_ui_restrictions(self, model_name, res_id=False):
+        result = {
+            'hide_restricted_buttons': False,
+            **{field_name: False for field_name in UI_ACTION_FIELDS.values()},
+        }
+        if not model_name:
             return result
 
-        if isinstance(record_ids, int):
-            record_ids = [record_ids]
-        records = Model.browse(record_ids or []).exists() if record_ids else Model.browse()
+        Model = self.env.get(model_name)
+        if Model is None or Model._skip_dynamic_restriction():
+            return result
+
         group_ids = self.env.user.groups_id.ids
         restrictions = self.sudo().search([
             ('active', '=', True),
             ('model_ids.model', '=', model_name),
             ('hide_restricted_buttons', '=', True),
+            ('use_domain', '=', False),
             '|',
             ('user_ids', 'in', [self.env.uid]),
             ('group_ids', 'in', group_ids),
@@ -354,14 +358,10 @@ class UserRestriction(models.Model):
         )
 
         for restriction in restrictions:
-            for action_name, field_name in UI_ACTION_FIELDS.items():
+            result['hide_restricted_buttons'] = True
+            for field_name in UI_ACTION_FIELDS.values():
                 if result[field_name] or not restriction[field_name]:
                     continue
-                if restriction.use_domain:
-                    if action_name in ('create', 'import') or not records:
-                        continue
-                    if not records._dynamic_restriction_matches_records(restriction, action_name):
-                        continue
                 result[field_name] = True
 
         return result
