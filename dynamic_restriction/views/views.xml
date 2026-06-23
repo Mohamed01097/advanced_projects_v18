@@ -36,12 +36,20 @@
             <field name="model">user.restrict</field>
             <field name="arch" type="xml">
                 <form string="Dynamic Restrictions">
+                    <header>
+                        <button name="action_load_view_elements"
+                                type="object"
+                                string="Load View Elements"
+                                class="btn-primary"/>
+
+                    </header>
                     <sheet>
                         <group>
                             <group string="Restriction">
                                 <field name="name"/>
                                 <field name="active"/>
-                                <field name="description" placeholder="Internal note about why this restriction exists."/>
+                                <field name="description"
+                                       placeholder="Internal note about why this restriction exists."/>
                             </group>
                             <group string="Scope">
                                 <field name="model_ids" widget="many2many_tags" options="{'no_create': True}"/>
@@ -121,6 +129,42 @@
                         <group string="User Interface">
                             <field name="hide_restricted_buttons"/>
                         </group>
+                        <notebook>
+                            <page string="Button Restrictions" name="button_restrictions">
+                                <div class="text-muted mb-2">
+                                    Buttons and tabs inherit Model, Users, Groups, and Companies from the main restriction.
+                                </div>
+                                <field name="button_rule_ids" context="{'default_restriction_id': id}">
+                                    <list editable="bottom">
+                                        <field name="active"/>
+                                        <field name="view_button_id"
+                                               string="Button"
+                                               domain="[('model_id', 'in', parent.model_ids)]"
+                                               options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="button_name" string="Technical Name"/>
+                                        <field name="button_label" string="Label"/>
+                                        <field name="description"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Tab Restrictions" name="tab_restrictions">
+                                <div class="text-muted mb-2">
+                                    Buttons and tabs inherit Model, Users, Groups, and Companies from the main restriction.
+                                </div>
+                                <field name="tab_rule_ids" context="{'default_restriction_id': id}">
+                                    <list editable="bottom">
+                                        <field name="active"/>
+                                        <field name="view_tab_id"
+                                               string="Tab"
+                                               domain="[('model_id', 'in', parent.model_ids)]"
+                                               options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="tab_name" string="Technical Name"/>
+                                        <field name="tab_label" string="Label"/>
+                                        <field name="description"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -202,8 +246,10 @@
             <field name="arch" type="xml">
                 <form string="Approval Request" create="0">
                     <header>
-                        <button name="action_approve" type="object" string="Approve" class="btn-primary" groups="base.group_system" invisible="state != 'pending'"/>
-                        <button name="action_reject" type="object" string="Reject" groups="base.group_system" invisible="state != 'pending'"/>
+                        <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                                groups="base.group_system" invisible="state != 'pending'"/>
+                        <button name="action_reject" type="object" string="Reject" groups="base.group_system"
+                                invisible="state != 'pending'"/>
                         <button name="action_cancel" type="object" string="Cancel" invisible="state != 'pending'"/>
                         <field name="state" widget="statusbar" statusbar_visible="pending,approved,rejected,cancelled"/>
                     </header>
@@ -256,7 +302,8 @@
             <field name="arch" type="xml">
                 <form string="Restriction Template">
                     <header>
-                        <button name="action_open_apply_wizard" type="object" string="Apply Template" class="btn-primary"/>
+                        <button name="action_open_apply_wizard" type="object" string="Apply Template"
+                                class="btn-primary"/>
                     </header>
                     <sheet>
                         <group>
@@ -274,7 +321,9 @@
                                 <field name="prevent_archive"/>
                                 <field name="prevent_import"/>
                                 <field name="own_documents_only"/>
-                                <field name="owner_field_id" domain="[('model_id', '=', model_id), ('ttype', '=', 'many2one'), ('relation', '=', 'res.users')]" options="{'no_create': True}"/>
+                                <field name="owner_field_id"
+                                       domain="[('model_id', '=', model_id), ('ttype', '=', 'many2one'), ('relation', '=', 'res.users')]"
+                                       options="{'no_create': True}"/>
                                 <field name="use_domain"/>
                                 <field name="domain_force"/>
                             </list>

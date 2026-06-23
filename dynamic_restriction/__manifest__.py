@@ -52,6 +52,7 @@ Compatible with Odoo 18. Preserves the feature set of the original Odoo 17 imple
     'assets': {
         'web.assets_backend': [
             'dynamic_restriction/static/src/js/ui_restriction.js',
+            'dynamic_restriction/static/src/js/view_element_restrictions.js',
         ],
     },
     'demo': [

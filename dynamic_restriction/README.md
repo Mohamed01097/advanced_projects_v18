@@ -36,6 +36,14 @@ The module is designed for consultants, implementation partners, and business ad
 - Mass action protection for bulk edit, delete, and archive operations.
 - Restriction templates for reusable business policies.
 
+## Hide Buttons & Tabs
+
+Odoo 18 administrators can hide specific form buttons and notebook tabs by model, user, group, and company from the restriction form.
+
+Devodoox
+
+devodoox06@gmail.com
+
 ## Business Use Cases
 
 - Prevent editing confirmed Sales Orders.

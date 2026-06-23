@@ -1,7 +1,9 @@
 import ipaddress
 import pytz
 
-from odoo import _, api, fields, models
+from lxml import etree
+
+from odoo import SUPERUSER_ID, _, api, fields, models, tools
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval, time
@@ -144,6 +146,16 @@ class UserRestriction(models.Model):
         'ir.model.fields',
         string='Owner Field',
         help='Restrict users to records where the selected owner field equals the current user.',
+    )
+    button_rule_ids = fields.One2many(
+        'dynamic.restriction.button',
+        'restriction_id',
+        string='Button Restrictions',
+    )
+    tab_rule_ids = fields.One2many(
+        'dynamic.restriction.tab',
+        'restriction_id',
+        string='Tab Restrictions',
     )
 
     def _get_domain_eval_context(self):
@@ -324,8 +336,248 @@ class UserRestriction(models.Model):
                 raise UserError(_('Allowed IP Ranges is required when IP restriction is enabled.'))
             restriction._get_allowed_ip_networks()
 
+    def _check_view_element_rules_single_model(self):
+        for restriction in self:
+            if not (restriction.button_rule_ids or restriction.tab_rule_ids):
+                continue
+            if len(restriction.model_ids) != 1:
+                raise UserError(
+                    _('Button and Tab restrictions require exactly one model on the main restriction.')
+                )
+
+    @api.constrains('model_ids', 'button_rule_ids', 'tab_rule_ids')
+    def _check_view_element_rules_model_count(self):
+        self._check_view_element_rules_single_model()
+
     def _clear_dynamic_restriction_cache(self):
         self.env.registry.clear_cache()
+
+    @api.model
+    def _add_discovered_view_element(self, elements, technical_name, display_label):
+        technical_name = (technical_name or '').strip()
+        if not technical_name:
+            return
+        display_label = (display_label or '').strip() or technical_name
+        if technical_name not in elements or elements[technical_name] == technical_name:
+            elements[technical_name] = display_label
+
+    @api.model
+    def _extract_view_elements_from_arch(self, arch):
+        buttons = {}
+        tabs = {}
+        if not arch:
+            return buttons, tabs
+
+        parser = etree.XMLParser(recover=True, remove_comments=True)
+        try:
+            root = etree.fromstring(str(arch).encode('utf-8'), parser=parser)
+        except (TypeError, ValueError, etree.XMLSyntaxError):
+            return buttons, tabs
+
+        for button in root.xpath('.//button[@name]'):
+            self._add_discovered_view_element(
+                buttons,
+                button.get('name'),
+                button.get('string') or button.get('title') or button.get('aria-label'),
+            )
+
+        for page in root.xpath('.//notebook//page[@name] | .//page[@name]'):
+            self._add_discovered_view_element(
+                tabs,
+                page.get('name'),
+                page.get('string') or page.get('title'),
+            )
+
+        return buttons, tabs
+
+    @api.model
+    def _sync_discovered_view_elements(self, model, helper_model_name, elements):
+        Helper = self.env[helper_model_name].sudo()
+        technical_names = list(elements)
+        existing = Helper.search([
+            ('model_id', '=', model.id),
+            ('technical_name', 'in', technical_names),
+        ]) if technical_names else Helper.browse()
+        existing_by_name = {record.technical_name: record for record in existing}
+
+        for technical_name, display_label in elements.items():
+            vals = {
+                'model_id': model.id,
+                'technical_name': technical_name,
+                'display_label': display_label or technical_name,
+            }
+            if technical_name in existing_by_name:
+                if existing_by_name[technical_name].display_label != vals['display_label']:
+                    existing_by_name[technical_name].write({'display_label': vals['display_label']})
+            else:
+                Helper.create(vals)
+
+    @api.model
+    def _load_view_elements_for_model(self, model):
+        buttons = {}
+        tabs = {}
+        views = self.env['ir.ui.view'].sudo().search([
+            ('active', '=', True),
+            ('model', '=', model.model),
+            ('type', '=', 'form'),
+        ])
+
+        for view in views:
+            view_buttons, view_tabs = self._extract_view_elements_from_arch(view.arch_db)
+            buttons.update(view_buttons)
+            tabs.update(view_tabs)
+
+        self._sync_discovered_view_elements(model, 'dynamic.view.button', buttons)
+        self._sync_discovered_view_elements(model, 'dynamic.view.tab', tabs)
+        return len(buttons), len(tabs)
+
+    @api.model
+    def scan_view_elements(self, model_name):
+        result = {
+            'buttons': [],
+            'tabs': [],
+        }
+        model = self.env['ir.model'].sudo()._get(model_name)
+        if not model:
+            return result
+
+        buttons = {}
+        tabs = {}
+        views = self.env['ir.ui.view'].sudo().search([
+            ('active', '=', True),
+            ('model', '=', model.model),
+            ('type', '=', 'form'),
+        ])
+        for view in views:
+            view_buttons, view_tabs = self._extract_view_elements_from_arch(view.arch_db)
+            buttons.update(view_buttons)
+            tabs.update(view_tabs)
+
+        result['buttons'] = [
+            {'name': technical_name, 'label': display_label}
+            for technical_name, display_label in buttons.items()
+        ]
+        result['tabs'] = [
+            {'name': technical_name, 'label': display_label}
+            for technical_name, display_label in tabs.items()
+        ]
+        return result
+
+    def action_load_view_elements(self):
+        model_records = self.env['ir.model']
+        for restriction in self:
+            model_records |= restriction.model_ids
+
+        if not model_records:
+            raise UserError(_('Select at least one model before loading view elements.'))
+
+        total_buttons = 0
+        total_tabs = 0
+        for model in model_records:
+            button_count, tab_count = self._load_view_elements_for_model(model)
+            total_buttons += button_count
+            total_tabs += tab_count
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('View Elements Loaded'),
+                'message': _(
+                    'Loaded %(button_count)s buttons and %(tab_count)s notebook tabs. '
+                    'Button and Tab restrictions require exactly one model on the main restriction before rules can be saved.'
+                    if len(model_records) > 1
+                    else 'Loaded %(button_count)s buttons and %(tab_count)s notebook tabs.'
+                ) % {
+                    'button_count': total_buttons,
+                    'tab_count': total_tabs,
+                },
+                'type': 'warning' if len(model_records) > 1 else 'success',
+                'sticky': False,
+            },
+        }
+
+    @api.model
+    def _is_view_ui_restriction_admin_bypass(self):
+        return (
+            self.env.su
+            or self.env.uid == SUPERUSER_ID
+            or self.env.user.has_group('base.group_system')
+        )
+
+    @api.model
+    def _view_ui_restriction_matches_scope(self, restriction, uid, group_ids, company_id):
+        if not restriction.user_ids and not restriction.group_ids:
+            return False
+        if uid not in restriction.user_ids.ids and not (group_ids & set(restriction.group_ids.ids)):
+            return False
+
+        return not restriction.company_ids or company_id in restriction.company_ids.ids
+
+    @api.model
+    def _collect_view_element_restrictions(self, model_name, uid, group_ids, company_id):
+        group_ids = set(group_ids)
+        restrictions = self.sudo().search([
+            ('active', '=', True),
+            ('model_ids.model', '=', model_name),
+        ])
+
+        buttons = []
+        tabs = []
+        seen_buttons = set()
+        seen_tabs = set()
+
+        def add_element(elements, seen, technical_name, label):
+            technical_name = (technical_name or '').strip()
+            if not technical_name or technical_name in seen:
+                return
+            seen.add(technical_name)
+            elements.append((technical_name, (label or technical_name).strip() or technical_name))
+
+        for restriction in restrictions:
+            if not self._view_ui_restriction_matches_scope(restriction, uid, group_ids, company_id):
+                continue
+            for rule in restriction.button_rule_ids.filtered('active'):
+                add_element(buttons, seen_buttons, rule.button_name, rule.button_label)
+            for rule in restriction.tab_rule_ids.filtered('active'):
+                add_element(tabs, seen_tabs, rule.tab_name, rule.tab_label)
+        return tuple(buttons), tuple(tabs)
+
+    @api.model
+    @tools.ormcache('uid', 'company_id', 'model_name', 'group_ids')
+    def _get_view_ui_restrictions_cached(self, uid, company_id, model_name, group_ids):
+        return self._collect_view_element_restrictions(model_name, uid, group_ids, company_id)
+
+    @api.model
+    def get_view_ui_restrictions(self, model_name):
+        result = {
+            'buttons': [],
+            'tabs': [],
+        }
+        if not model_name or self._is_view_ui_restriction_admin_bypass():
+            return result
+
+        buttons, tabs = self._get_view_ui_restrictions_cached(
+            self.env.uid,
+            self.env.company.id,
+            model_name,
+            tuple(sorted(self.env.user.groups_id.ids)),
+        )
+        result['buttons'] = [
+            {
+                'name': button_name,
+                'label': button_label,
+            }
+            for button_name, button_label in buttons
+        ]
+        result['tabs'] = [
+            {
+                'name': tab_name,
+                'label': tab_label,
+            }
+            for tab_name, tab_label in tabs
+        ]
+        return result
 
     @api.model
     def get_ui_restrictions(self, model_name, res_id=False):
@@ -369,11 +621,13 @@ class UserRestriction(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         restrictions = super().create(vals_list)
+        restrictions._check_view_element_rules_single_model()
         restrictions._clear_dynamic_restriction_cache()
         return restrictions
 
     def write(self, vals):
         result = super().write(vals)
+        self._check_view_element_rules_single_model()
         self._clear_dynamic_restriction_cache()
         return result
 

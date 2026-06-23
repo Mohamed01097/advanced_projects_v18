@@ -1,5 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_user_restrict,user.restrict,model_user_restrict,base.group_system,1,1,1,1
+access_dynamic_view_button_admin,dynamic.view.button.admin,model_dynamic_view_button,base.group_system,1,1,1,1
+access_dynamic_view_tab_admin,dynamic.view.tab.admin,model_dynamic_view_tab,base.group_system,1,1,1,1
+access_dynamic_restriction_button_admin,dynamic.restriction.button.admin,model_dynamic_restriction_button,base.group_system,1,1,1,1
+access_dynamic_restriction_tab_admin,dynamic.restriction.tab.admin,model_dynamic_restriction_tab,base.group_system,1,1,1,1
 access_dynamic_restriction_log_admin,dynamic.restriction.log.admin,model_dynamic_restriction_log,base.group_system,1,0,0,0
 access_dynamic_restriction_approval_user,dynamic.restriction.approval.user,model_dynamic_restriction_approval,base.group_user,1,1,0,0
 access_dynamic_restriction_approval_admin,dynamic.restriction.approval.admin,model_dynamic_restriction_approval,base.group_system,1,1,1,1
