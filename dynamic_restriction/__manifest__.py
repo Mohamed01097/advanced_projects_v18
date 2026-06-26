@@ -39,7 +39,7 @@ Compatible with Odoo 18. Preserves the feature set of the original Odoo 17 imple
         # 'static/description/screenshot_07_approval_requests.png',
         # 'static/description/screenshot_08_audit_logs.png',
         # 'static/description/screenshot_09_templates.png',
-        'static/description/animated_demo.gif',
+        'static/description/demo.gif',
     ],
     'data': [
         'security/ir.model.access.csv',
