@@ -51,7 +51,7 @@
             justify-content: space-between;
             background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
 
@@ -83,7 +83,7 @@
             display: block;
             margin: 0 auto;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
         }
 
         .module-screenshot {
@@ -95,7 +95,7 @@
             display: block;
             margin: 25px auto;
             border-radius: 10px;
-            box-shadow: 0 5px 18px rgba(0,0,0,0.10);
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
         }
 
         .feature-card {
@@ -104,7 +104,7 @@
             padding: 28px;
             background: #ffffff;
             border-radius: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
 
@@ -378,9 +378,8 @@
             min-height: 260px;
             border: 1px dashed rgba(135, 90, 123, .45);
             border-radius: 8px;
-            background:
-                linear-gradient(135deg, rgba(135, 90, 123, .08), rgba(0, 160, 157, .08)),
-                #ffffff;
+            background: linear-gradient(135deg, rgba(135, 90, 123, .08), rgba(0, 160, 157, .08)),
+            #ffffff;
             display: grid;
             place-items: center;
             text-align: center;
@@ -514,294 +513,360 @@
     </style>
 </head>
 <body>
-    <main class="odx-page">
-        <section class="odx-section odx-hero hero-section">
-            <div class="hero-right">
-                <div class="odx-eyebrow">DevOdooX Security App</div>
-                <h1>Dynamic Access Manager</h1>
-                <p class="odx-lead">A practical Odoo security layer for restricting sensitive actions, hiding unavailable UI controls, routing approvals, and auditing blocked operations without custom code.</p>
-                <ul class="odx-list">
-                    <li>Control create, edit, delete, duplicate, archive, import and export actions.</li>
-                    <li>Apply policies by user, group, company, ownership, domain, time, and IP.</li>
-                    <li>Convert sensitive operations into approval requests with audit traceability.</li>
-                </ul>
-                <div class="odx-badges">
-                    <span class="odx-badge odoo">Odoo 17</span>
-                    <span class="odx-badge odoo">Odoo 18</span>
-                    <span class="odx-badge odoo">Odoo 19</span>
-                    <span class="odx-badge">Developed by DevOdooX</span>
+<main class="odx-page">
+    <section class="odx-section odx-hero hero-section">
+        <div class="hero-right">
+            <div class="odx-eyebrow">DevOdooX Security App</div>
+            <h1>Dynamic Access Manager</h1>
+            <p class="odx-lead">A practical Odoo security layer for restricting sensitive actions, hiding unavailable UI
+                controls, routing approvals, and auditing blocked operations without custom code.</p>
+            <ul class="odx-list">
+                <li>Control create, edit, delete, duplicate, archive, import and export actions.</li>
+                <li>Apply policies by user, group, company, ownership, domain, time, and IP.</li>
+                <li>Convert sensitive operations into approval requests with audit traceability.</li>
+            </ul>
+            <div class="odx-badges">
+                <span class="odx-badge odoo">Odoo 17</span>
+                <span class="odx-badge odoo">Odoo 18</span>
+                <span class="odx-badge odoo">Odoo 19</span>
+                <span class="odx-badge">Developed by DevOdooX</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="odx-section">
+        <div class="odx-brand-image">
+            <img class="odx-banner-img" src="overview.png" alt="Dynamic Access Manager visual overview" loading="lazy">
+        </div>
+        <div class="odx-section-head">
+            <div>
+                <div class="odx-eyebrow">Overview</div>
+                <h2>Govern Odoo access with configurable business rules.</h2>
+            </div>
+            <p>Dynamic Access Manager helps administrators enforce action-level restrictions across Odoo models. It is
+                designed for teams that need stronger governance than standard access rights alone, while keeping
+                configuration inside the Odoo interface.</p>
+        </div>
+        <div class="odx-info-grid">
+            <article class="odx-card">
+                <span class="odx-icon">01</span>
+                <h3>What It Does</h3>
+                <p>Creates model-based restrictions for actions, protected fields, ownership access, UI hiding,
+                    approvals, time rules, IP rules, and audit logs.</p>
+            </article>
+            <article class="odx-card">
+                <span class="odx-icon">02</span>
+                <h3>Why Businesses Need It</h3>
+                <p>Prevents accidental or unauthorized changes to sensitive sales, accounting, CRM, inventory, HR, and
+                    operational records.</p>
+            </article>
+            <article class="odx-card">
+                <span class="odx-icon">03</span>
+                <h3>Business Value</h3>
+                <p>Reduces custom development, improves compliance, supports delegated approvals, and gives managers a
+                    visible audit trail.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="odx-section">
+        <div class="odx-brand-image">
+            <img class="odx-banner-img" src="features.png" alt="Dynamic Access Manager feature board" loading="lazy">
+        </div>
+        <div class="odx-section-head">
+            <div>
+                <div class="odx-eyebrow">Key Features</div>
+                <h2>Built for real Odoo administration workflows.</h2>
+            </div>
+            <p>Use one consistent framework to protect business actions, guide users away from unavailable options, and
+                review security events from dedicated menus.</p>
+        </div>
+        <div class="odx-feature-list">
+            <article class="odx-feature-card">
+                <span class="odx-icon">A</span>
+                <div>
+                    <h3>Dynamic Action Restrictions</h3>
+                    <p>Block create, edit, delete, duplicate, archive, import, export, mass edit, mass delete, and mass
+                        archive actions.</p>
+                </div>
+            </article>
+            <article class="odx-feature-card">
+                <span class="odx-icon">B</span>
+                <div>
+                    <h3>Conditional Policies</h3>
+                    <p>Apply restrictions by domain, selected users, groups, companies, owner fields, weekdays, working
+                        hours, and IP ranges.</p>
+                </div>
+            </article>
+            <article class="odx-feature-card">
+                <span class="odx-icon">C</span>
+                <div>
+                    <h3>Approval Requests</h3>
+                    <p>Require manager review before edit, delete, duplicate, or archive operations are executed.</p>
+                </div>
+            </article>
+            <article class="odx-feature-card">
+                <span class="odx-icon">D</span>
+                <div>
+                    <h3>Audit &amp; Traceability</h3>
+                    <p>Capture blocked actions, approval-required events, and approved execution for operational
+                        accountability.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="odx-section">
+        <div class="odx-section-head">
+            <div>
+                <div class="odx-eyebrow">Detailed Features</div>
+                <h2>Feature walkthrough from the included module screenshots.</h2>
+            </div>
+            <p>The following sections are based on the actual screens packaged with the module, showing how
+                administrators configure policies and how restricted users experience them.</p>
+        </div>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">01</span>
+                <h3>Dedicated App Launcher Entry</h3>
+                <p>Dynamic Access Manager appears as its own Odoo application, giving administrators a clear entry point
+                    for managing security policies, approvals, and logs.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_01.png" width="1400" height="600"
+                     alt="Dynamic Access Manager app launcher icon" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">02</span>
+                <h3>Central Restriction Configuration</h3>
+                <p>The main restriction form combines model scope, users, groups, companies, blocked actions, readonly
+                    fields, approval rules, ownership, IP rules, and UI hiding in one configuration screen.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_02.png" width="1400" height="600"
+                     alt="Dynamic Access Manager main restriction configuration form" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">03</span>
+                <h3>Backend Enforcement for Blocked Edits</h3>
+                <p>When a user tries to edit a protected Sales Order, the action is blocked with a clear Odoo warning.
+                    The restriction is enforced server-side, not only hidden in the interface.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_03.png" width="1400" height="600"
+                     alt="Blocked edit warning on Sales Order" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">04</span>
+                <h3>UI Action Hiding for Restricted Users</h3>
+                <p>Restricted users can be guided away from unavailable actions. In the Sales quotations screen, the
+                    create action is hidden to keep the interface clean and predictable.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_04.png" width="1400" height="600"
+                     alt="Sales quotation screen with create action hidden" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">05</span>
+                <h3>Own Documents in CRM Pipeline</h3>
+                <p>Ownership restrictions limit CRM users to records assigned to them. The screenshot shows the CRM
+                    pipeline filtered to the current user's own opportunities.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_05.png" width="1400" height="600"
+                     alt="CRM pipeline with own documents restriction" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">06</span>
+                <h3>Approval Required Before Sensitive Actions</h3>
+                <p>For actions that should not be permanently blocked, the module can create an approval request
+                    instead. Users receive immediate feedback that a request has been created.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_06.png" width="1400" height="600"
+                     alt="Approval required message after restricted CRM action" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">07</span>
+                <h3>Approval Requests Queue</h3>
+                <p>Managers can review pending and approved requests from a dedicated Approval Requests menu, with user,
+                    action, model, record, state, and reviewer information visible at a glance.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_07.png" width="1400" height="600"
+                     alt="Dynamic Access Manager approval requests list" loading="lazy">
+            </div>
+        </article>
+
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">08</span>
+                <h3>Complete Action Audit Log</h3>
+                <p>Administrators can inspect blocked operations and approval events from the Audit Logs menu, including
+                    date, user, action, model, record, restriction, and company details.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_08.png" width="1400" height="600"
+                     alt="Dynamic Access Manager audit logs list" loading="lazy">
+            </div>
+        </article>
+
+        <!-- Hide Buttons -->
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">09</span>
+                <h3>Hide Any Button</h3>
+                <p>Control user access by hiding specific buttons from form and list views. Restrict actions such as
+                    Create, Edit, Delete, Duplicate, Export, and custom buttons without any custom development.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_09.png" width="1400" height="600"
+                     alt="Dynamic Restrictions hide buttons feature" loading="lazy">
+            </div>
+        </article>
+
+        <!-- Hide Menus -->
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">10</span>
+                <h3>Hide Any Menu</h3>
+                <p>Easily hide any menu item for selected users or groups. Simplify navigation, prevent unauthorized
+                    access, and create a cleaner Odoo experience tailored to each user role.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_11.png" width="1400" height="600"
+                     alt="Dynamic Restrictions hide menus feature" loading="lazy">
+            </div>
+        </article>
+
+        <!-- Hide Tabs -->
+        <article class="odx-shot feature-card">
+            <div class="odx-shot-copy">
+                <span class="odx-shot-number">11</span>
+                <h3>Hide Any Tab</h3>
+                <p>Show only the information users need by hiding specific notebook tabs within forms. Improve
+                    usability, reduce clutter, and protect sensitive data from unauthorized users.</p>
+            </div>
+            <div class="odx-shot-image">
+                <img class="module-screenshot" src="screenshots/screen_10.png" width="1400" height="600"
+                     alt="Dynamic Restrictions hide tabs feature" loading="lazy">
+            </div>
+        </article>
+    </section>
+
+    <section class="odx-section">
+        <div class="odx-section-head">
+            <div>
+                <div class="odx-eyebrow">Benefits</div>
+                <h2>Designed for administrators, consultants, and growing teams.</h2>
+            </div>
+            <p>Dynamic Access Manager keeps security policy management practical, visible, and easier to maintain across
+                changing business processes.</p>
+        </div>
+        <div class="odx-benefit-grid">
+            <article class="odx-benefit"><h3>Easy Configuration</h3>
+                <p>Configure restrictions directly from the Odoo backend.</p></article>
+            <article class="odx-benefit"><h3>User Friendly</h3>
+                <p>Hide restricted actions and provide clear warnings when access is blocked.</p></article>
+            <article class="odx-benefit"><h3>No Custom Coding Required</h3>
+                <p>Build practical security policies without writing model-specific Python code.</p></article>
+            <article class="odx-benefit"><h3>Enterprise Ready</h3>
+                <p>Includes approval workflows, audit logs, readonly fields, time rules, and IP rules.</p></article>
+            <article class="odx-benefit"><h3>Multi-company Compatible</h3>
+                <p>Apply policies globally or only for selected companies.</p></article>
+            <article class="odx-benefit"><h3>Seamless Odoo Integration</h3>
+                <p>Works through Odoo models, menus, access groups, backend methods, and web UI behavior.</p></article>
+        </div>
+    </section>
+
+    <section class="odx-section">
+        <div class="odx-video">
+            <div>
+                <div class="odx-eyebrow">Video Demonstration</div>
+                <h2>Watch the module in action.</h2>
+                <p class="odx-lead">Use this section to add a YouTube walkthrough showing restriction setup, blocked
+                    actions, approval requests, and audit logs.</p>
+            </div>
+            <div class="odx-video-box">
+                <div>
+                    <span class="odx-play">&#9658;</span>
+                    <h3>YouTube video placeholder</h3>
+                    <p>Replace this area with an embedded YouTube link when the product video is ready.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="odx-section">
+    <section class="odx-section">
+        <div class="odx-support-grid">
             <div class="odx-brand-image">
-                <img class="odx-banner-img" src="overview.png" alt="Dynamic Access Manager visual overview" loading="lazy">
+                <img class="odx-banner-img" src="support.png" alt="DevOdooX support and customization" loading="lazy">
             </div>
-            <div class="odx-section-head">
-                <div>
-                    <div class="odx-eyebrow">Overview</div>
-                    <h2>Govern Odoo access with configurable business rules.</h2>
-                </div>
-                <p>Dynamic Access Manager helps administrators enforce action-level restrictions across Odoo models. It is designed for teams that need stronger governance than standard access rights alone, while keeping configuration inside the Odoo interface.</p>
-            </div>
-            <div class="odx-info-grid">
-                <article class="odx-card">
-                    <span class="odx-icon">01</span>
-                    <h3>What It Does</h3>
-                    <p>Creates model-based restrictions for actions, protected fields, ownership access, UI hiding, approvals, time rules, IP rules, and audit logs.</p>
-                </article>
-                <article class="odx-card">
-                    <span class="odx-icon">02</span>
-                    <h3>Why Businesses Need It</h3>
-                    <p>Prevents accidental or unauthorized changes to sensitive sales, accounting, CRM, inventory, HR, and operational records.</p>
-                </article>
-                <article class="odx-card">
-                    <span class="odx-icon">03</span>
-                    <h3>Business Value</h3>
-                    <p>Reduces custom development, improves compliance, supports delegated approvals, and gives managers a visible audit trail.</p>
-                </article>
-            </div>
-        </section>
-
-        <section class="odx-section">
-            <div class="odx-brand-image">
-                <img class="odx-banner-img" src="features.png" alt="Dynamic Access Manager feature board" loading="lazy">
-            </div>
-            <div class="odx-section-head">
-                <div>
-                    <div class="odx-eyebrow">Key Features</div>
-                    <h2>Built for real Odoo administration workflows.</h2>
-                </div>
-                <p>Use one consistent framework to protect business actions, guide users away from unavailable options, and review security events from dedicated menus.</p>
-            </div>
-            <div class="odx-feature-list">
-                <article class="odx-feature-card">
-                    <span class="odx-icon">A</span>
-                    <div>
-                        <h3>Dynamic Action Restrictions</h3>
-                        <p>Block create, edit, delete, duplicate, archive, import, export, mass edit, mass delete, and mass archive actions.</p>
+            <div>
+                <div class="odx-eyebrow">Support</div>
+                <h2>Professional Odoo support from DevOdooX.</h2>
+                <p class="odx-lead">Get help with installation, configuration, custom development, module customization,
+                    migration planning, and Odoo implementation support.</p>
+                <div class="odx-contact-list">
+                    <div class="odx-contact-item"><strong>Support Email</strong><a href="mailto:devodoox06@gmail.com">  devodoox06@gmail.com</a>
                     </div>
-                </article>
-                <article class="odx-feature-card">
-                    <span class="odx-icon">B</span>
-                    <div>
-                        <h3>Conditional Policies</h3>
-                        <p>Apply restrictions by domain, selected users, groups, companies, owner fields, weekdays, working hours, and IP ranges.</p>
+                    <br/>
+                    <!--                    <div class="odx-contact-item"><strong>LinkedIn</strong><span>DevOdooX</span></div>-->
+                    <!--                    <div class="odx-contact-item"><strong>YouTube</strong><span>DevOdooX</span></div>-->
+<!--                    <div class="odx-contact-item">-->
+<!--                        <strong>LinkedIn</strong>-->
+<!--                        <a href="https://www.linkedin.com/company/odoo-dev-x"-->
+<!--                           target="_blank" rel="noopener noreferrer">-->
+<!--                            Follow Page In LinkedIn-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                    <br/>-->
+
+                    <div class="odx-contact-item">
+                        <strong>YouTube</strong>
+                        <a href="https://youtube.com/playlist?list=PLHpU4U_0ZKuhTzFrmvQ9gs2BHdouowULQ&si=IiGfUXRzLJEa4j4k"
+                           target="_blank" rel="noopener noreferrer">
+                            Watch Playlist
+                        </a>
                     </div>
-                </article>
-                <article class="odx-feature-card">
-                    <span class="odx-icon">C</span>
-                    <div>
-                        <h3>Approval Requests</h3>
-                        <p>Require manager review before edit, delete, duplicate, or archive operations are executed.</p>
-                    </div>
-                </article>
-                <article class="odx-feature-card">
-                    <span class="odx-icon">D</span>
-                    <div>
-                        <h3>Audit &amp; Traceability</h3>
-                        <p>Capture blocked actions, approval-required events, and approved execution for operational accountability.</p>
-                    </div>
-                </article>
+                    <br/>
+
+                    <div class="odx-contact-item"><strong>Custom Development</strong><span> Available</span></div>
+                    <br/>
+
+                    <div class="odx-contact-item"><strong>Module Customization</strong><span> Available</span></div>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="odx-section">
-            <div class="odx-section-head">
-                <div>
-                    <div class="odx-eyebrow">Detailed Features</div>
-                    <h2>Feature walkthrough from the included module screenshots.</h2>
-                </div>
-                <p>The following sections are based on the actual screens packaged with the module, showing how administrators configure policies and how restricted users experience them.</p>
-            </div>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">01</span>
-                    <h3>Dedicated App Launcher Entry</h3>
-                    <p>Dynamic Access Manager appears as its own Odoo application, giving administrators a clear entry point for managing security policies, approvals, and logs.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_01.png" width="1400" height="600" alt="Dynamic Access Manager app launcher icon" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">02</span>
-                    <h3>Central Restriction Configuration</h3>
-                    <p>The main restriction form combines model scope, users, groups, companies, blocked actions, readonly fields, approval rules, ownership, IP rules, and UI hiding in one configuration screen.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_02.png" width="1400" height="600" alt="Dynamic Access Manager main restriction configuration form" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">03</span>
-                    <h3>Backend Enforcement for Blocked Edits</h3>
-                    <p>When a user tries to edit a protected Sales Order, the action is blocked with a clear Odoo warning. The restriction is enforced server-side, not only hidden in the interface.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_03.png" width="1400" height="600" alt="Blocked edit warning on Sales Order" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">04</span>
-                    <h3>UI Action Hiding for Restricted Users</h3>
-                    <p>Restricted users can be guided away from unavailable actions. In the Sales quotations screen, the create action is hidden to keep the interface clean and predictable.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_04.png"  width="1400" height="600" alt="Sales quotation screen with create action hidden" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">05</span>
-                    <h3>Own Documents in CRM Pipeline</h3>
-                    <p>Ownership restrictions limit CRM users to records assigned to them. The screenshot shows the CRM pipeline filtered to the current user's own opportunities.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_05.png" width="1400" height="600" alt="CRM pipeline with own documents restriction" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">06</span>
-                    <h3>Approval Required Before Sensitive Actions</h3>
-                    <p>For actions that should not be permanently blocked, the module can create an approval request instead. Users receive immediate feedback that a request has been created.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_06.png" width="1400" height="600" alt="Approval required message after restricted CRM action" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">07</span>
-                    <h3>Approval Requests Queue</h3>
-                    <p>Managers can review pending and approved requests from a dedicated Approval Requests menu, with user, action, model, record, state, and reviewer information visible at a glance.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_07.png" width="1400" height="600" alt="Dynamic Access Manager approval requests list" loading="lazy">
-                </div>
-            </article>
-
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">08</span>
-                    <h3>Complete Action Audit Log</h3>
-                    <p>Administrators can inspect blocked operations and approval events from the Audit Logs menu, including date, user, action, model, record, restriction, and company details.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_08.png" width="1400" height="600" alt="Dynamic Access Manager audit logs list" loading="lazy">
-                </div>
-            </article>
-
-            <!-- Hide Buttons -->
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">09</span>
-                    <h3>Hide Any Button</h3>
-                    <p>Control user access by hiding specific buttons from form and list views. Restrict actions such as Create, Edit, Delete, Duplicate, Export, and custom buttons without any custom development.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_09.png" width="1400" height="600" alt="Dynamic Restrictions hide buttons feature" loading="lazy">
-                </div>
-            </article>
-
-            <!-- Hide Menus -->
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">10</span>
-                    <h3>Hide Any Menu</h3>
-                    <p>Easily hide any menu item for selected users or groups. Simplify navigation, prevent unauthorized access, and create a cleaner Odoo experience tailored to each user role.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_11.png" width="1400" height="600" alt="Dynamic Restrictions hide menus feature" loading="lazy">
-                </div>
-            </article>
-
-            <!-- Hide Tabs -->
-            <article class="odx-shot feature-card">
-                <div class="odx-shot-copy">
-                    <span class="odx-shot-number">11</span>
-                    <h3>Hide Any Tab</h3>
-                    <p>Show only the information users need by hiding specific notebook tabs within forms. Improve usability, reduce clutter, and protect sensitive data from unauthorized users.</p>
-                </div>
-                <div class="odx-shot-image">
-                    <img class="module-screenshot" src="screenshots/screen_10.png" width="1400" height="600" alt="Dynamic Restrictions hide tabs feature" loading="lazy">
-                </div>
-            </article>
-        </section>
-
-        <section class="odx-section">
-            <div class="odx-section-head">
-                <div>
-                    <div class="odx-eyebrow">Benefits</div>
-                    <h2>Designed for administrators, consultants, and growing teams.</h2>
-                </div>
-                <p>Dynamic Access Manager keeps security policy management practical, visible, and easier to maintain across changing business processes.</p>
-            </div>
-            <div class="odx-benefit-grid">
-                <article class="odx-benefit"><h3>Easy Configuration</h3><p>Configure restrictions directly from the Odoo backend.</p></article>
-                <article class="odx-benefit"><h3>User Friendly</h3><p>Hide restricted actions and provide clear warnings when access is blocked.</p></article>
-                <article class="odx-benefit"><h3>No Custom Coding Required</h3><p>Build practical security policies without writing model-specific Python code.</p></article>
-                <article class="odx-benefit"><h3>Enterprise Ready</h3><p>Includes approval workflows, audit logs, readonly fields, time rules, and IP rules.</p></article>
-                <article class="odx-benefit"><h3>Multi-company Compatible</h3><p>Apply policies globally or only for selected companies.</p></article>
-                <article class="odx-benefit"><h3>Seamless Odoo Integration</h3><p>Works through Odoo models, menus, access groups, backend methods, and web UI behavior.</p></article>
-            </div>
-        </section>
-
-        <section class="odx-section">
-            <div class="odx-video">
-                <div>
-                    <div class="odx-eyebrow">Video Demonstration</div>
-                    <h2>Watch the module in action.</h2>
-                    <p class="odx-lead">Use this section to add a YouTube walkthrough showing restriction setup, blocked actions, approval requests, and audit logs.</p>
-                </div>
-                <div class="odx-video-box">
-                    <div>
-                        <span class="odx-play">&#9658;</span>
-                        <h3>YouTube video placeholder</h3>
-                        <p>Replace this area with an embedded YouTube link when the product video is ready.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="odx-section">
-            <div class="odx-support-grid">
-                <div class="odx-brand-image">
-                    <img class="odx-banner-img" src="support.png" alt="DevOdooX support and customization" loading="lazy">
-                </div>
-                <div>
-                    <div class="odx-eyebrow">Support</div>
-                    <h2>Professional Odoo support from DevOdooX.</h2>
-                    <p class="odx-lead">Get help with installation, configuration, custom development, module customization, migration planning, and Odoo implementation support.</p>
-                    <div class="odx-contact-list">
-                        <div class="odx-contact-item"><strong>Support Email</strong><a href="mailto:devodoox06@gmail.com">devodoox06@gmail.com</a></div>
-                        <div class="odx-contact-item"><strong>LinkedIn</strong><span>DevOdooX</span></div>
-                        <div class="odx-contact-item"><strong>YouTube</strong><span>DevOdooX</span></div>
-                        <div class="odx-contact-item"><strong>Custom Development</strong><span>Available</span></div>
-                        <div class="odx-contact-item"><strong>Module Customization</strong><span>Available</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="odx-section odx-footer">
-            <div class="odx-brand-image">
-                <img class="odx-banner-img" src="footer.png" alt="Developed by DevOdooX footer" loading="lazy">
-            </div>
-            <p class="odx-footer-copy">Dynamic Access Manager by DevOdooX. Professional Odoo Solutions for Odoo 17, Odoo 18, and Odoo 19.</p>
-        </section>
-    </main>
+    <section class="odx-section odx-footer">
+        <div class="odx-brand-image">
+            <img class="odx-banner-img" src="footer.png" alt="Developed by DevOdooX footer" loading="lazy">
+        </div>
+        <p class="odx-footer-copy">Dynamic Access Manager by DevOdooX. Professional Odoo Solutions for Odoo 17, Odoo 18,
+            and Odoo 19.</p>
+    </section>
+</main>
 </body>
 </html>
