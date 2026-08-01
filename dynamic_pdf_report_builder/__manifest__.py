@@ -1,0 +1,23 @@
+{
+    "name": "Dynamic PDF Report Builder",
+    "version": "18.0.1.4.0",
+    "author": "MyAdvancedProjects",
+    "category": "Technical",
+    "summary": "No-code builder for simple dynamic PDF reports",
+    "depends": ["base", "web"],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/report_paperformat_data.xml",
+        "data/report_library_data.xml",
+        "data/report_usage_cleanup_data.xml",
+        "report/dynamic_pdf_report_templates.xml",
+        "views/dynamic_pdf_report_views.xml",
+        "views/dynamic_pdf_report_analytics_views.xml",
+        "views/dynamic_pdf_report_suggestion_wizard_views.xml",
+        "views/dynamic_pdf_report_import_wizard_views.xml",
+        "views/dynamic_pdf_report_library_views.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "license": "LGPL-3",
+}

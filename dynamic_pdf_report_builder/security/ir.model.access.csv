@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_dynamic_pdf_report_system,dynamic.pdf.report system,model_dynamic_pdf_report,base.group_system,1,1,1,1
+access_dynamic_pdf_report_print_log_system,dynamic.pdf.report.print.log system,model_dynamic_pdf_report_print_log,base.group_system,1,1,1,1
+access_dynamic_pdf_report_dashboard_system,dynamic.pdf.report.dashboard system,model_dynamic_pdf_report_dashboard,base.group_system,1,1,1,1
+access_dynamic_pdf_report_field_system,dynamic.pdf.report.field system,model_dynamic_pdf_report_field,base.group_system,1,1,1,1
+access_dynamic_pdf_report_block_system,dynamic.pdf.report.block system,model_dynamic_pdf_report_block,base.group_system,1,1,1,1
+access_dynamic_pdf_report_formula_system,dynamic.pdf.report.formula system,model_dynamic_pdf_report_formula,base.group_system,1,1,1,1
+access_dynamic_pdf_report_group_system,dynamic.pdf.report.group system,model_dynamic_pdf_report_group,base.group_system,1,1,1,1
+access_dynamic_pdf_report_aggregate_system,dynamic.pdf.report.aggregate system,model_dynamic_pdf_report_aggregate,base.group_system,1,1,1,1
+access_dynamic_pdf_report_import_wizard_system,dynamic.pdf.report.import.wizard system,model_dynamic_pdf_report_import_wizard,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_wizard_system,dynamic.pdf.report.suggestion.wizard system,model_dynamic_pdf_report_suggestion_wizard,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_field_system,dynamic.pdf.report.suggestion.field system,model_dynamic_pdf_report_suggestion_field,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_section_system,dynamic.pdf.report.suggestion.section system,model_dynamic_pdf_report_suggestion_section,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_line_field_system,dynamic.pdf.report.suggestion.line.field system,model_dynamic_pdf_report_suggestion_line_field,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_formula_system,dynamic.pdf.report.suggestion.formula system,model_dynamic_pdf_report_suggestion_formula,base.group_system,1,1,1,1
+access_dynamic_pdf_report_suggestion_block_system,dynamic.pdf.report.suggestion.block system,model_dynamic_pdf_report_suggestion_block,base.group_system,1,1,1,1
+access_dynamic_pdf_report_library_system,dynamic.pdf.report.library system,model_dynamic_pdf_report_library,base.group_system,1,1,1,1
+access_dynamic_pdf_report_line_section_system,dynamic.pdf.report.line.section system,model_dynamic_pdf_report_line_section,base.group_system,1,1,1,1
+access_dynamic_pdf_report_line_field_system,dynamic.pdf.report.line.field system,model_dynamic_pdf_report_line_field,base.group_system,1,1,1,1

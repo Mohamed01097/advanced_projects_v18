@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="dynamic_pdf_report_block">
+        <div
+            t-if="block.is_active"
+            class="dynamic-report-block"
+            t-att-style="style['block'] + ' text-align: %s;' % get_block_alignment(block)"
+            t-att-dir="report_config.direction">
+            <t t-if="block.block_type in ['static_text', 'terms_conditions', 'note']">
+                <div
+                    t-if="get_block_title(block)"
+                    class="dynamic-report-block-title"
+                    t-att-style="style['block_title']">
+                    <span t-out="get_block_title(block)"/>
+                </div>
+                <div
+                    t-if="block.content"
+                    class="dynamic-report-block-content"
+                    t-att-style="style['block_content']"
+                    t-field="block.content"/>
+            </t>
+
+            <t t-if="block.block_type == 'signature'">
+                <div class="dynamic-report-signature" t-att-style="style['signature']">
+                    <div class="dynamic-report-block-title" t-att-style="style['block_title']">
+                        <span t-out="block.signature_label or 'Signature'"/>
+                    </div>
+                    <div
+                        t-if="block.show_signature_line"
+                        class="dynamic-report-signature-line"
+                        t-att-style="style['signature_line']"/>
+                    <div t-if="block.signer_name">
+                        <span t-out="block.signer_name"/>
+                    </div>
+                    <div t-if="block.signer_position">
+                        <span t-out="block.signer_position"/>
+                    </div>
+                </div>
+            </t>
+
+            <t t-if="block.block_type == 'qr_code'">
+                <t t-set="block_size" t-value="get_block_size(block)"/>
+                <t t-set="barcode_url" t-value="get_barcode_url(block, doc, 'QR')"/>
+                <div
+                    t-if="get_block_title(block)"
+                    class="dynamic-report-block-title"
+                    t-att-style="style['block_title']">
+                    <span t-out="get_block_title(block)"/>
+                </div>
+                <img
+                    t-if="barcode_url"
+                    class="dynamic-report-qr"
+                    t-att-src="barcode_url"
+                    t-att-style="'width: %spx; height: %spx;' % (block_size, block_size)"
+                    alt="QR Code"/>
+            </t>
+
+            <t t-if="block.block_type == 'barcode'">
+                <t t-set="block_dimensions" t-value="get_block_dimensions(block)"/>
+                <t t-set="barcode_url" t-value="get_barcode_url(block, doc, block.barcode_type or 'Code128')"/>
+                <div
+                    t-if="get_block_title(block)"
+                    class="dynamic-report-block-title"
+                    t-att-style="style['block_title']">
+                    <span t-out="get_block_title(block)"/>
+                </div>
+                <img
+                    t-if="barcode_url"
+                    class="dynamic-report-barcode"
+                    t-att-src="barcode_url"
+                    t-att-style="'width: %spx; height: %spx;' % block_dimensions"
+                    alt="Barcode"/>
+            </t>
+
+            <t t-if="block.block_type == 'watermark'">
+                <div
+                    class="dynamic-report-watermark"
+                    t-att-style="style['watermark'] + ' opacity: %.3f;' % block.watermark_opacity">
+                    <span t-out="block.watermark_text"/>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <template id="dynamic_pdf_report_blocks">
+        <t t-foreach="get_blocks(blocks_by_position, position)" t-as="block">
+            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_block"/>
+        </t>
+    </template>
+
+    <template id="dynamic_pdf_report_record_with_line_sections">
+        <t t-set="doc" t-value="row[0]"/>
+        <div
+            class="dynamic-pdf-doc-block"
+            t-att-style="style['doc_block']">
+            <t t-set="position" t-value="'before_main_table'"/>
+            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+
+            <div class="dynamic-pdf-table-wrapper dynamic-report-table-wrapper" t-att-style="style['table_wrapper']">
+                <table class="dynamic-pdf-table dynamic-pdf-main-table" t-att-style="style['table']">
+                    <thead>
+                        <tr>
+                            <th t-foreach="field_lines" t-as="line" t-att-style="style['th']">
+                                <span t-if="line.show_label" t-out="line.field_description or line.field_name"/>
+                                <span t-else="" t-out="line.field_name"/>
+                            </th>
+                            <th t-foreach="main_formulas" t-as="formula" t-att-style="style['th']">
+                                <span t-out="formula.output_label or formula.name"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td t-foreach="field_lines" t-as="line" t-att-style="style['td']">
+                                <span t-out="format_value(doc, line)"/>
+                            </td>
+                            <td t-foreach="main_formulas" t-as="formula" t-att-style="style['td']">
+                                <span t-out="format_formula_value(compute_formula_value(formula, doc, formula_definitions))"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <t t-set="position" t-value="'after_main_table'"/>
+            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+            <t t-set="position" t-value="'before_line_sections'"/>
+            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+
+            <t t-foreach="line_section_data" t-as="section_data">
+                <t t-set="section" t-value="section_data['section']"/>
+                <t t-set="line_fields" t-value="section_data['field_lines']"/>
+                <t t-set="line_records" t-value="get_line_records(doc, section)"/>
+                <t t-set="line_formulas" t-value="get_line_formulas(formula_definitions, section)"/>
+                <div t-if="line_records" class="dynamic-pdf-line-section" t-att-style="style['line_section']">
+                    <h3
+                        t-if="section.show_section_title"
+                        class="dynamic-pdf-line-section-title"
+                        t-att-style="style['line_section_title']">
+                        <span t-out="section.name"/>
+                    </h3>
+                    <div class="dynamic-pdf-line-table-wrapper" t-att-style="style['table_wrapper']">
+                        <table class="dynamic-pdf-table dynamic-pdf-line-table" t-att-style="style['table']">
+                            <thead>
+                                <tr>
+                                    <th t-foreach="line_fields" t-as="line" t-att-style="style['th']">
+                                        <span t-if="line.show_label" t-out="line.field_description or line.field_name"/>
+                                        <span t-else="" t-out="line.field_name"/>
+                                    </th>
+                                    <th t-foreach="line_formulas" t-as="formula" t-att-style="style['th']">
+                                        <span t-out="formula.output_label or formula.name"/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    t-foreach="get_record_rows(line_records)"
+                                    t-as="line_row"
+                                    t-att-style="style['zebra_row'] if report_config.zebra_rows and line_row[1] else ''">
+                                    <td t-foreach="line_fields" t-as="line" t-att-style="style['td']">
+                                        <span t-out="format_value(line_row[0], line)"/>
+                                    </td>
+                                    <td t-foreach="line_formulas" t-as="formula" t-att-style="style['td']">
+                                        <span t-out="format_formula_value(compute_formula_value(formula, line_row[0], formula_definitions))"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+
+            <t t-set="position" t-value="'after_line_sections'"/>
+            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+        </div>
+    </template>
+
+    <template id="dynamic_pdf_report_template">
+        <t t-call="web.html_container">
+            <style type="text/css">
+                .dynamic-pdf-report,
+                .dynamic-report-header,
+                .dynamic-pdf-header,
+                .dynamic-pdf-footer {
+                    font-family: Arial, sans-serif;
+                }
+                .dynamic-report-header {
+                    clear: both;
+                    margin-bottom: 0 !important;
+                    border-bottom: 0 !important;
+                    text-align: center;
+                }
+                .dynamic-report-logo-section {
+                    clear: both;
+                    text-align: center;
+                    margin: 0 0 12px 0;
+                }
+                .dynamic-report-logo,
+                .dynamic-pdf-logo {
+                    display: block;
+                    max-height: 70px !important;
+                    max-width: 120px !important;
+                    margin: 0 auto 12px auto;
+                }
+                .dynamic-report-company-section {
+                    text-align: center;
+                    margin-bottom: 10px;
+                }
+                .dynamic-report-title {
+                    clear: both;
+                    display: block;
+                    text-align: center !important;
+                    margin: 0 0 12px 0 !important;
+                }
+                .dynamic-pdf-modern .dynamic-report-header .dynamic-report-title {
+                    color: #FFFFFF !important;
+                }
+                .dynamic-report-separator {
+                    clear: both;
+                    height: 0;
+                    line-height: 0;
+                    margin: 0;
+                }
+                .dynamic-report-table-wrapper,
+                .dynamic-pdf-table-wrapper {
+                    margin-top: 30px !important;
+                    clear: both;
+                }
+                .dynamic-pdf-doc-block {
+                    clear: both;
+                }
+                .dynamic-pdf-line-section {
+                    clear: both;
+                    page-break-inside: auto;
+                }
+                .dynamic-pdf-line-section-title {
+                    clear: both;
+                }
+                .dynamic-pdf-line-table-wrapper {
+                    clear: both;
+                    margin-top: 8px;
+                }
+                .dynamic-pdf-company-name {
+                    font-weight: bold;
+                    margin-bottom: 2px;
+                }
+                .dynamic-pdf-company-address {
+                    white-space: pre-line;
+                    font-size: 10px;
+                    line-height: 1.35;
+                }
+                .dynamic-pdf-table th {
+                    font-weight: bold;
+                }
+                .dynamic-pdf-modern .dynamic-pdf-title {
+                    margin-top: 4px;
+                }
+                .dynamic-pdf-minimal .dynamic-pdf-table th {
+                    font-weight: normal;
+                }
+                .dynamic-report-block {
+                    clear: both;
+                    page-break-inside: avoid;
+                }
+                .dynamic-report-block-title {
+                    clear: both;
+                }
+                .dynamic-report-block-content {
+                    clear: both;
+                }
+                .dynamic-report-signature {
+                    page-break-inside: avoid;
+                }
+                .dynamic-report-signature-line {
+                    clear: both;
+                }
+                .dynamic-report-watermark {
+                    clear: both;
+                }
+                .dynamic-pdf-footer-blocks .dynamic-report-block {
+                    margin: 0 0 3px 0 !important;
+                    font-size: 9px !important;
+                }
+                .dynamic-pdf-footer-blocks .dynamic-report-block-title {
+                    margin: 0 0 1px 0 !important;
+                    font-size: 10px !important;
+                }
+                .dynamic-pdf-footer-blocks .dynamic-report-block-content,
+                .dynamic-pdf-footer-blocks .dynamic-report-block-content p {
+                    margin: 0 !important;
+                    line-height: 1.1 !important;
+                }
+                .dynamic-report-group-header,
+                .dynamic-report-group-footer,
+                .dynamic-report-grand-total {
+                    clear: both;
+                    page-break-inside: avoid;
+                }
+                .dynamic-report-qr,
+                .dynamic-report-barcode {
+                    display: inline-block;
+                    max-width: 100%;
+                }
+            </style>
+
+            <div
+                t-attf-class="article page dynamic-pdf-report dynamic-pdf-#{report_config.layout_style}"
+                t-att-style="style['article']"
+                t-att-dir="report_config.direction"
+                t-att-data-oe-model="doc_model"
+                t-att-data-oe-id="doc_ids and doc_ids[0]"
+                t-att-data-oe-lang="docs and docs[0].env.context.get('lang')">
+                <div
+                    t-if="(report_config.show_company_logo and company.logo) or report_config.show_company_name or report_config.show_report_title"
+                    class="dynamic-pdf-header dynamic-report-header"
+                    t-att-style="style['header']"
+                    t-att-dir="report_config.direction">
+                    <div t-if="report_config.show_company_logo and company.logo" class="dynamic-report-logo-section">
+                        <img
+                            class="dynamic-pdf-logo dynamic-report-logo"
+                            t-att-src="image_data_uri(company.logo)"
+                            t-att-style="style['logo']"
+                            alt="Logo"/>
+                    </div>
+                    <div t-if="report_config.show_company_name" class="dynamic-report-company-section" t-att-style="style['header_text']">
+                        <div class="dynamic-pdf-company-name" t-out="company.name"/>
+                        <div
+                            t-if="company.partner_id.contact_address"
+                            class="dynamic-pdf-company-address"
+                            t-out="company.partner_id.contact_address"/>
+                    </div>
+                    <h2 t-if="report_config.show_report_title" class="dynamic-pdf-title dynamic-report-title" t-att-style="style['title']">
+                        <span t-out="report_config.report_title or report_config.name"/>
+                    </h2>
+                    <div class="dynamic-report-separator" t-att-style="'border-top: 1px solid %s;' % report_config.border_color"/>
+                </div>
+
+                <t t-if="not line_section_data">
+                    <t t-set="doc" t-value="primary_doc"/>
+                    <t t-set="main_formulas" t-value="get_main_formulas(formula_definitions)"/>
+                    <t t-set="position" t-value="'before_main_table'"/>
+                    <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+
+                    <div class="dynamic-pdf-table-wrapper dynamic-report-table-wrapper" t-att-style="style['table_wrapper']">
+                        <table class="dynamic-pdf-table" t-att-style="style['table']">
+                            <thead>
+                                <tr>
+                                    <th t-foreach="field_lines" t-as="line" t-att-style="style['th']">
+                                        <span t-if="line.show_label" t-out="line.field_description or line.field_name"/>
+                                        <span t-else="" t-out="line.field_name"/>
+                                    </th>
+                                    <th t-foreach="main_formulas" t-as="formula" t-att-style="style['th']">
+                                        <span t-out="formula.output_label or formula.name"/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="not group_definitions">
+                                    <tr
+                                        t-foreach="report_rows"
+                                        t-as="row"
+                                        t-att-style="style['zebra_row'] if report_config.zebra_rows and row[1] else ''">
+                                        <td t-foreach="field_lines" t-as="line" t-att-style="style['td']">
+                                            <span t-out="format_value(row[0], line)"/>
+                                        </td>
+                                        <td t-foreach="main_formulas" t-as="formula" t-att-style="style['td']">
+                                            <span t-out="format_formula_value(compute_formula_value(formula, row[0], formula_definitions))"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="aggregate_definitions and report_rows">
+                                        <td
+                                            t-att-colspan="len(field_lines) + len(main_formulas)"
+                                            class="dynamic-report-grand-total"
+                                            t-att-style="style['grand_total_cell']">
+                                            <span t-out="get_totals_line(grand_totals, aggregate_definitions, 'Grand Total')"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="group_definitions">
+                                    <t t-foreach="grouped_rows" t-as="event">
+                                        <tr t-if="event['type'] == 'group_header'">
+                                            <td
+                                                t-att-colspan="len(field_lines) + len(main_formulas)"
+                                                class="dynamic-report-group-header"
+                                                t-att-style="style['group_header_cell'] + get_group_indent_style(event['level'], report_config.direction)">
+                                                <span t-out="event['label']"/>: <span t-out="event['value']"/>
+                                            </td>
+                                        </tr>
+                                        <tr
+                                            t-if="event['type'] == 'record'"
+                                            t-att-style="style['zebra_row'] if report_config.zebra_rows and event['row'][1] else ''">
+                                            <td t-foreach="field_lines" t-as="line" t-att-style="style['td']">
+                                                <span t-out="format_value(event['row'][0], line)"/>
+                                            </td>
+                                            <td t-foreach="main_formulas" t-as="formula" t-att-style="style['td']">
+                                                <span t-out="format_formula_value(compute_formula_value(formula, event['row'][0], formula_definitions))"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="event['type'] == 'group_footer' and aggregate_definitions">
+                                            <td
+                                                t-att-colspan="len(field_lines) + len(main_formulas)"
+                                                class="dynamic-report-group-footer"
+                                                t-att-style="style['group_footer_cell'] + get_group_indent_style(event['level'], report_config.direction)">
+                                                <span t-out="get_totals_line(event['totals'], aggregate_definitions, 'Subtotal')"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="aggregate_definitions and report_rows">
+                                        <td
+                                            t-att-colspan="len(field_lines) + len(main_formulas)"
+                                            class="dynamic-report-grand-total"
+                                            t-att-style="style['grand_total_cell']">
+                                            <span t-out="get_totals_line(grand_totals, aggregate_definitions, 'Grand Total')"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="not report_rows">
+                                    <td t-att-colspan="len(field_lines) + len(main_formulas)" t-att-style="style['td']">No records selected.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <t t-set="position" t-value="'after_main_table'"/>
+                    <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                    <t t-set="position" t-value="'before_line_sections'"/>
+                    <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                    <t t-set="position" t-value="'after_line_sections'"/>
+                    <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                </t>
+
+                <t t-if="line_section_data">
+                    <t t-set="main_formulas" t-value="get_main_formulas(formula_definitions)"/>
+                    <t t-if="not report_rows">
+                        <t t-set="doc" t-value="primary_doc"/>
+                        <t t-set="position" t-value="'before_main_table'"/>
+                        <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                    </t>
+                    <div t-if="not report_rows" class="dynamic-pdf-table-wrapper dynamic-report-table-wrapper" t-att-style="style['table_wrapper']">
+                        <table class="dynamic-pdf-table" t-att-style="style['table']">
+                            <tbody>
+                                <tr>
+                                    <td t-att-colspan="len(field_lines) + len(main_formulas)" t-att-style="style['td']">No records selected.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-if="not report_rows">
+                        <t t-set="doc" t-value="primary_doc"/>
+                        <t t-set="position" t-value="'after_main_table'"/>
+                        <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                        <t t-set="position" t-value="'before_line_sections'"/>
+                        <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                        <t t-set="position" t-value="'after_line_sections'"/>
+                        <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                    </t>
+                    <t t-if="not group_definitions">
+                        <t t-foreach="report_rows" t-as="row">
+                            <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_record_with_line_sections"/>
+                        </t>
+                        <div
+                            t-if="aggregate_definitions and report_rows"
+                            class="dynamic-report-grand-total"
+                            t-att-style="style['grand_total']">
+                            <span t-out="get_totals_line(grand_totals, aggregate_definitions, 'Grand Total')"/>
+                        </div>
+                    </t>
+                    <t t-if="group_definitions">
+                        <t t-foreach="grouped_rows" t-as="event">
+                            <div
+                                t-if="event['type'] == 'group_header'"
+                                class="dynamic-report-group-header"
+                                t-att-style="style['group_header'] + get_group_indent_style(event['level'], report_config.direction)">
+                                <span t-out="event['label']"/>: <span t-out="event['value']"/>
+                            </div>
+                            <t t-if="event['type'] == 'record'">
+                                <t t-set="row" t-value="event['row']"/>
+                                <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_record_with_line_sections"/>
+                            </t>
+                            <div
+                                t-if="event['type'] == 'group_footer' and aggregate_definitions"
+                                class="dynamic-report-group-footer"
+                                t-att-style="style['group_footer'] + get_group_indent_style(event['level'], report_config.direction)">
+                                <span t-out="get_totals_line(event['totals'], aggregate_definitions, 'Subtotal')"/>
+                            </div>
+                        </t>
+                        <div
+                            t-if="aggregate_definitions and report_rows"
+                            class="dynamic-report-grand-total"
+                            t-att-style="style['grand_total']">
+                            <span t-out="get_totals_line(grand_totals, aggregate_definitions, 'Grand Total')"/>
+                        </div>
+                    </t>
+                </t>
+
+            </div>
+
+            <div
+                t-if="report_config.show_footer or get_blocks(blocks_by_position, 'footer_area')"
+                class="footer dynamic-pdf-footer"
+                t-att-style="style['footer'] + (' margin-top: 0; padding-top: 2px; font-size: 9px;' if get_blocks(blocks_by_position, 'footer_area') else '')"
+                t-att-dir="report_config.direction">
+                <div t-if="get_blocks(blocks_by_position, 'footer_area')" class="dynamic-pdf-footer-blocks">
+                    <t t-set="doc" t-value="primary_doc"/>
+                    <t t-set="position" t-value="'footer_area'"/>
+                    <t t-call="dynamic_pdf_report_builder.dynamic_pdf_report_blocks"/>
+                </div>
+                <table t-if="report_config.show_footer" style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 55%; vertical-align: top;">
+                            <span t-if="report_config.footer_text" t-out="report_config.footer_text"/>
+                            <span t-if="template_preset_label">
+                                <br/>
+                                Generated from template: <span t-out="template_preset_label"/>
+                            </span>
+                        </td>
+                        <td style="width: 45%; vertical-align: top; text-align: right;">
+                            <span t-if="report_config.show_print_date" t-out="print_date"/>
+                            <span t-if="report_config.show_print_date and report_config.show_page_number and report_type == 'pdf'"> | </span>
+                            <span t-if="report_config.show_page_number and report_type == 'pdf'">
+                                Page <span class="page"/> / <span class="topage"/>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+    </template>
+</odoo>

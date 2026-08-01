@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dynamic_pdf_report_import_wizard_form" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.import.wizard.form</field>
+        <field name="model">dynamic.pdf.report.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Dynamic PDF Report Template">
+                <sheet>
+                    <group>
+                        <field name="template_file" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="new_report_name" placeholder="Leave empty to use the exported report name"/>
+                        <field
+                            name="target_model_id"
+                            domain="[('transient', '=', False)]"
+                            placeholder="Leave empty to use the model from the template"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_import_template" string="Import Template" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dynamic_pdf_report_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Template</field>
+        <field name="res_model">dynamic.pdf.report.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_dynamic_pdf_report_import_wizard_form"/>
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <menuitem
+        id="menu_dynamic_pdf_report_import_template"
+        name="Import Template"
+        parent="menu_dynamic_pdf_report_builder"
+        action="action_dynamic_pdf_report_import_wizard"
+        sequence="20"
+        groups="base.group_system"/>
+</odoo>

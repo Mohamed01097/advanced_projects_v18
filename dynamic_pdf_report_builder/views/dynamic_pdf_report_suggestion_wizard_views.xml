@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dynamic_pdf_report_suggestion_wizard_form" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.suggestion.wizard.form</field>
+        <field name="model">dynamic.pdf.report.suggestion.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Suggest Report Structure">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="report_id" readonly="1"/>
+                            <field name="model_id" readonly="1"/>
+                            <field name="model_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="suggestion_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="summary" readonly="1" nolabel="1"/>
+                    <notebook>
+                        <page string="Main Fields">
+                            <field name="main_field_ids">
+                                <list editable="bottom" create="0" delete="0">
+                                    <field name="selected"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="field_id" readonly="1"/>
+                                    <field name="field_description" readonly="1"/>
+                                    <field name="field_type" readonly="1"/>
+                                    <field name="field_name" readonly="1" optional="hide"/>
+                                    <field name="show_label"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Line Sections">
+                            <field name="section_ids" mode="list,form">
+                                <list string="Line Sections" open_form_view="True" create="0" delete="0">
+                                    <field name="selected"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="one2many_field_id" readonly="1"/>
+                                    <field name="one2many_field_name" readonly="1" optional="hide"/>
+                                    <field name="related_model_name" readonly="1"/>
+                                    <field name="show_section_title"/>
+                                </list>
+                                <form string="Suggested Line Section">
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="selected"/>
+                                                <field name="sequence"/>
+                                                <field name="name" readonly="1"/>
+                                                <field name="one2many_field_id" readonly="1"/>
+                                            </group>
+                                            <group>
+                                                <field name="one2many_field_name" readonly="1"/>
+                                                <field name="related_model_name" readonly="1"/>
+                                                <field name="show_section_title"/>
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                            <page string="Line Fields">
+                                                <field name="line_field_ids">
+                                                    <list editable="bottom" create="0" delete="0">
+                                                        <field name="selected"/>
+                                                        <field name="sequence" widget="handle"/>
+                                                        <field name="field_id" readonly="1"/>
+                                                        <field name="field_description" readonly="1"/>
+                                                        <field name="field_type" readonly="1"/>
+                                                        <field name="field_name" readonly="1" optional="hide"/>
+                                                        <field name="show_label"/>
+                                                    </list>
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Basic Formulas">
+                            <field name="formula_ids">
+                                <list editable="bottom" create="0" delete="0">
+                                    <field name="selected"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="code" readonly="1"/>
+                                    <field name="scope" readonly="1"/>
+                                    <field name="line_section_field_name" readonly="1" optional="show"/>
+                                    <field name="formula_type" readonly="1"/>
+                                    <field name="formula_expression" readonly="1"/>
+                                    <field name="condition_expression" readonly="1" optional="hide"/>
+                                    <field name="output_label" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Useful Blocks">
+                            <field name="block_ids">
+                                <list editable="bottom" create="0" delete="0">
+                                    <field name="selected"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="block_type" readonly="1"/>
+                                    <field name="title" readonly="1"/>
+                                    <field name="position" readonly="1"/>
+                                    <field name="alignment" readonly="1"/>
+                                    <field name="source_type" readonly="1"/>
+                                    <field name="source_field_id" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_apply_suggestions"
+                        string="Apply Suggestions"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="not suggestion_count"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

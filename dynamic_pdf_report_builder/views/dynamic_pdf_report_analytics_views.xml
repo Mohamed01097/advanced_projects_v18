@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="dynamic_pdf_report_dashboard_main" model="dynamic.pdf.report.dashboard">
+        <field name="name">Dashboard</field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_dashboard_form" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.dashboard.form</field>
+        <field name="model">dynamic.pdf.report.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dynamic PDF Report Dashboard" create="0" edit="0" delete="0">
+                <sheet>
+                    <field name="name" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_reports" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="total_report_count" widget="statinfo" string="Total Reports"/>
+                        </button>
+                        <button name="action_open_draft_reports" type="object" class="oe_stat_button" icon="fa-pencil-square-o">
+                            <field name="draft_report_count" widget="statinfo" string="Draft Reports"/>
+                        </button>
+                        <button name="action_open_done_reports" type="object" class="oe_stat_button" icon="fa-check-circle-o">
+                            <field name="done_report_count" widget="statinfo" string="Completed Reports"/>
+                        </button>
+                        <button name="action_open_print_logs" type="object" class="oe_stat_button" icon="fa-print">
+                            <field name="total_print_count" widget="statinfo" string="Total Prints"/>
+                        </button>
+                        <button name="action_open_today_print_logs" type="object" class="oe_stat_button" icon="fa-calendar-check-o">
+                            <field name="printed_today_count" widget="statinfo" string="Prints Today"/>
+                        </button>
+                        <button name="action_open_month_print_logs" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="printed_this_month_count" widget="statinfo" string="Prints This Month"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Reports">
+                            <field name="total_report_count" readonly="1"/>
+                            <field name="draft_report_count" readonly="1"/>
+                            <field name="done_report_count" readonly="1"/>
+                        </group>
+                        <group string="Usage">
+                            <field name="total_print_count" readonly="1"/>
+                            <field name="printed_today_count" readonly="1"/>
+                            <field name="printed_this_month_count" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_print_log_list" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.print.log.list</field>
+        <field name="model">dynamic.pdf.report.print.log</field>
+        <field name="arch" type="xml">
+            <list string="Dynamic PDF Report Print Logs" create="0" edit="0" delete="0">
+                <field name="printed_on"/>
+                <field name="report_id"/>
+                <field name="user_id"/>
+                <field name="model_name"/>
+                <field name="record_count"/>
+                <field name="source"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_print_log_form" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.print.log.form</field>
+        <field name="model">dynamic.pdf.report.print.log</field>
+        <field name="arch" type="xml">
+            <form string="Dynamic PDF Report Print Log" create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="report_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="model_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="printed_on" readonly="1"/>
+                            <field name="record_count" readonly="1"/>
+                            <field name="source" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_print_log_graph" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.print.log.graph</field>
+        <field name="model">dynamic.pdf.report.print.log</field>
+        <field name="arch" type="xml">
+            <graph string="Prints by Report" type="bar" sample="1">
+                <field name="report_id"/>
+                <field name="print_quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_print_log_pivot" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.print.log.pivot</field>
+        <field name="model">dynamic.pdf.report.print.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Dynamic Report Print Analytics" sample="1">
+                <field name="report_id" type="row"/>
+                <field name="user_id" type="col"/>
+                <field name="print_quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_dynamic_pdf_report_print_log_search" model="ir.ui.view">
+        <field name="name">dynamic.pdf.report.print.log.search</field>
+        <field name="model">dynamic.pdf.report.print.log</field>
+        <field name="arch" type="xml">
+            <search string="Dynamic PDF Report Print Logs">
+                <field name="report_id"/>
+                <field name="user_id"/>
+                <field name="model_name"/>
+                <field name="source"/>
+                <filter
+                    name="today"
+                    string="Today"
+                    domain="[('printed_on', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')), ('printed_on', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter
+                    name="this_month"
+                    string="This Month"
+                    domain="[('printed_on', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')), ('printed_on', '&lt;', datetime.datetime.combine(context_today() + relativedelta(day=1, months=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter
+                    name="this_year"
+                    string="This Year"
+                    domain="[('printed_on', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(day=1, month=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')), ('printed_on', '&lt;', datetime.datetime.combine(context_today() + relativedelta(day=1, month=1, years=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter string="Printed Date" name="printed_date" date="printed_on"/>
+                <separator/>
+                <filter name="group_by_user" string="By User" context="{'group_by': 'user_id'}"/>
+                <filter name="group_by_report" string="By Report" context="{'group_by': 'report_id'}"/>
+                <filter name="group_by_model" string="By Model" context="{'group_by': 'model_name'}"/>
+                <filter name="group_by_date" string="By Date" context="{'group_by': 'printed_on:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dynamic_pdf_report_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">dynamic.pdf.report.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_dynamic_pdf_report_dashboard_form"/>
+        <field name="res_id" ref="dynamic_pdf_report_dashboard_main"/>
+        <field name="target">current</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <record id="action_dynamic_pdf_report_print_log" model="ir.actions.act_window">
+        <field name="name">Print Logs</field>
+        <field name="res_model">dynamic.pdf.report.print.log</field>
+        <field name="view_mode">list,graph,pivot,form</field>
+        <field name="search_view_id" ref="view_dynamic_pdf_report_print_log_search"/>
+        <field name="context">{}</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <menuitem
+        id="menu_dynamic_pdf_report_dashboard"
+        name="Dashboard"
+        parent="menu_dynamic_pdf_report_builder"
+        action="action_dynamic_pdf_report_dashboard"
+        sequence="5"
+        groups="base.group_system"/>
+
+    <menuitem
+        id="menu_dynamic_pdf_report_print_logs"
+        name="Print Logs"
+        parent="menu_dynamic_pdf_report_builder"
+        action="action_dynamic_pdf_report_print_log"
+        sequence="30"
+        groups="base.group_system"/>
+</odoo>
