@@ -5,6 +5,8 @@
     "category": "Technical",
     "summary": "No-code builder for simple dynamic PDF reports",
     "depends": ["base", "web"],
+    'price': '100.0',
+    'currency': 'USD',
     "data": [
         "security/ir.model.access.csv",
         "data/report_paperformat_data.xml",
