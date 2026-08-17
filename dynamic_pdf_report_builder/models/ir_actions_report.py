@@ -105,15 +105,68 @@ class IrActionsReport(models.Model):
     def _get_rendering_context(self, report, docids, data):
         report_config = self._get_dynamic_pdf_report_config_from_action(report)
         if not report_config:
+            if self._is_dynamic_pdf_report_action(report):
+                raise UserError(_(
+                    "Unable to find the Dynamic PDF Report configuration linked to this report action. "
+                    "Run Create / Update Report on the configuration to repair the action."
+                ))
             return super()._get_rendering_context(report, docids, data)
 
+        if not report_config.model_name or report_config.model_name not in self.env:
+            raise UserError(_("The Dynamic PDF Report uses a model that is not available in the registry."))
+        if report.model != report_config.model_name:
+            raise UserError(_(
+                "The Dynamic PDF Report action targets '%(action_model)s', but its configuration targets "
+                "'%(config_model)s'. Run Create / Update Report to repair the action.",
+                action_model=report.model,
+                config_model=report_config.model_name,
+            ))
+
         # The current ir.actions.report record is the source of truth.  Put
-        # its configuration in the values passed to the abstract report model
-        # instead of relying on request/action context that differs between
-        # Preview, the Print menu, and direct server-side rendering.
+        # its configuration in the values passed through Odoo's standard
+        # context first.  A later module (notably Web Studio) can override
+        # _get_rendering_context_model and skip the abstract report model for
+        # generated unique routes, so explicitly complete the same context
+        # through the shared report engine afterward.
         rendering_data = dict(data or {})
         rendering_data["report_config"] = report_config
-        return super()._get_rendering_context(report, docids, rendering_data)
+        render_values = super()._get_rendering_context(report, docids, rendering_data)
+        if render_values.get("_dynamic_pdf_report_config_id") != report_config.id:
+            report_engine = self.env["report.%s" % REPORT_TEMPLATE_XML_ID]
+            dynamic_values = report_engine._prepare_dynamic_pdf_rendering_context(
+                docids,
+                report_config,
+            )
+            self._merge_dynamic_pdf_rendering_context(render_values, dynamic_values)
+        return render_values
+
+    @api.model
+    def _is_dynamic_pdf_report_action(self, report):
+        if not report or report._name != "ir.actions.report":
+            return False
+        report_name = report.report_name or ""
+        return (
+            bool(report.dynamic_pdf_report_id)
+            or report_name == REPORT_TEMPLATE_XML_ID
+            or report_name.startswith(DYNAMIC_REPORT_NAME_PREFIX)
+        )
+
+    @api.model
+    def _merge_dynamic_pdf_rendering_context(self, render_values, dynamic_values):
+        # Preserve valid standard Odoo document values and every unrelated
+        # value supplied by other report extensions.  Repair only malformed
+        # document values and set the custom Dynamic PDF contract.
+        standard_values = {
+            "doc_ids": lambda value: isinstance(value, list),
+            "doc_model": lambda value: isinstance(value, str),
+            "docs": lambda value: value is not None and hasattr(value, "_name"),
+        }
+        for key, value in dynamic_values.items():
+            validator = standard_values.get(key)
+            if validator and validator(render_values.get(key)):
+                continue
+            render_values[key] = value
+        return render_values
 
     @api.model
     def _get_dynamic_pdf_report_config_from_action(self, report):

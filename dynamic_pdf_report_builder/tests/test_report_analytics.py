@@ -1,10 +1,11 @@
 from datetime import datetime, time, timedelta
+from unittest.mock import patch
 
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase, tagged
 
-from ..const import DYNAMIC_REPORT_NAME_PREFIX, REPORT_TEMPLATE_XML_ID
+from ..const import DYNAMIC_PDF_STYLE_KEYS, DYNAMIC_REPORT_NAME_PREFIX, REPORT_TEMPLATE_XML_ID
 
 
 @tagged("post_install", "-at_install")
@@ -99,7 +100,96 @@ class TestDynamicPdfReportAnalytics(TransactionCase):
 
         self.assertEqual(values["report_config"], report)
         self.assertEqual(values["docs"], partner)
+        self.assertIsInstance(values["style"], dict)
+        self.assertEqual(set(values["style"]), set(DYNAMIC_PDF_STYLE_KEYS))
         self.assertIn(b"Context-Free Partner Report", html)
+
+    def test_unique_route_context_does_not_depend_on_rendering_model_lookup(self):
+        report = self._create_partner_report(name="Late Override Partner Report")
+        partner = self.env["res.partner"].create({"name": "Late Override Partner"})
+        report_service = self.env["ir.actions.report"].with_context(dynamic_pdf_report_id=None)
+
+        # noinspection PyUnresolvedReferences
+        with patch.object(type(report_service), "_get_rendering_context_model", return_value=None):
+            values = report_service._get_rendering_context(
+                report.report_action_id,
+                partner.ids,
+                {"report_type": "html"},
+            )
+
+        self.assertEqual(values["report_config"], report)
+        self.assertEqual(values["docs"], partner)
+        self.assertEqual(values["doc_ids"], partner.ids)
+        self.assertEqual(values["doc_model"], "res.partner")
+        self.assertIsInstance(values["style"], dict)
+        self.assertEqual(set(values["style"]), set(DYNAMIC_PDF_STYLE_KEYS))
+
+    def test_style_contract_uses_safe_defaults_for_legacy_values(self):
+        report_engine = self.env["report.%s" % REPORT_TEMPLATE_XML_ID]
+        legacy_report = self.report_model.new({
+            "name": "Legacy Style Report",
+            "model_id": self.partner_model.id,
+            "layout_style": False,
+            "paper_size": False,
+            "direction": False,
+            "primary_color": False,
+            "secondary_color": False,
+            "text_color": False,
+            "table_header_bg_color": False,
+            "table_header_text_color": False,
+            "border_color": False,
+            "font_size": False,
+            "title_font_size": False,
+            "table_border_style": False,
+            "footer_text": False,
+        })
+
+        style_config = report_engine._get_render_style_config(legacy_report)
+        style = report_engine._get_style_values(legacy_report, style_config=style_config)
+
+        self.assertEqual(style_config["layout_style"], "classic")
+        self.assertEqual(style_config["paper_size"], "a4")
+        self.assertEqual(style_config["direction"], "ltr")
+        self.assertEqual(style_config["secondary_color"], "#F3F4F6")
+        self.assertEqual(style_config["table_border_style"], "solid")
+        self.assertIsInstance(style, dict)
+        self.assertEqual(set(style), set(DYNAMIC_PDF_STYLE_KEYS))
+        self.assertTrue(all(isinstance(style[key], str) for key in DYNAMIC_PDF_STYLE_KEYS))
+
+    def test_style_contract_covers_layout_direction_and_optional_content_edges(self):
+        report_engine = self.env["report.%s" % REPORT_TEMPLATE_XML_ID]
+        for layout_style in ("classic", "modern", "minimal"):
+            for direction in ("ltr", "rtl"):
+                report = self.report_model.new({
+                    "name": "Style Edge Report",
+                    "model_id": self.partner_model.id,
+                    "layout_style": layout_style,
+                    "direction": direction,
+                    "secondary_color": False,
+                    "footer_text": False,
+                    "show_company_logo": False,
+                })
+                style = report_engine._get_style_values(report)
+
+                self.assertIsInstance(style, dict)
+                self.assertEqual(set(style), set(DYNAMIC_PDF_STYLE_KEYS))
+                self.assertIn("direction: %s" % direction, style["article"])
+
+    def test_dynamic_action_without_configuration_fails_before_qweb(self):
+        orphan_action = self.env["ir.actions.report"].create({
+            "name": "Orphan Dynamic Report",
+            "model": "res.partner",
+            "report_type": "qweb-pdf",
+            "report_name": "%s999999999" % DYNAMIC_REPORT_NAME_PREFIX,
+            "report_file": "%s999999999" % DYNAMIC_REPORT_NAME_PREFIX,
+        })
+
+        with self.assertRaisesRegex(UserError, "Unable to find the Dynamic PDF Report configuration"):
+            self.env["ir.actions.report"]._get_rendering_context(
+                orphan_action,
+                [],
+                {"report_type": "html"},
+            )
 
     def test_legacy_action_reverse_link_supplies_report_config(self):
         report = self._create_partner_report(name="Legacy Linked Partner Report")

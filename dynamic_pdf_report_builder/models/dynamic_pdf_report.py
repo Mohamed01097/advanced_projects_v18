@@ -899,13 +899,18 @@ class DynamicPdfReport(models.Model):
         self.ensure_one()
         for field_name in COLOR_FIELDS:
             value = (self[field_name] or "").strip()
+            # Legacy configurations can predate the required style fields.
+            # Empty values use the render-time defaults; malformed non-empty
+            # colors remain configuration errors.
+            if not value:
+                continue
             if not HEX_COLOR_RE.match(value):
                 field_label = self._fields[field_name].string
                 raise UserError(_("%(field)s must be a valid hex color like #FFFFFF.", field=field_label))
 
     def _get_paperformat(self):
         self.ensure_one()
-        paper_size = self.paper_size or "a4"
+        paper_size = self.paper_size if self.paper_size in PAPERFORMAT_XML_IDS else "a4"
         xml_id = PAPERFORMAT_XML_IDS[paper_size]
         paperformat = self.env.ref(xml_id, raise_if_not_found=False)
         if paperformat:

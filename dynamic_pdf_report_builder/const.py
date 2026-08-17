@@ -61,6 +61,35 @@ AGGREGATE_NUMERIC_FIELD_TYPES = (
 REPORT_TEMPLATE_XML_ID = "dynamic_pdf_report_builder.dynamic_pdf_report_template"
 DYNAMIC_REPORT_NAME_PREFIX = REPORT_TEMPLATE_XML_ID + "_"
 
+DYNAMIC_PDF_STYLE_KEYS = (
+    "article",
+    "block",
+    "block_content",
+    "block_title",
+    "doc_block",
+    "footer",
+    "grand_total",
+    "grand_total_cell",
+    "group_footer",
+    "group_footer_cell",
+    "group_header",
+    "group_header_cell",
+    "header",
+    "header_text",
+    "line_section",
+    "line_section_title",
+    "logo",
+    "signature",
+    "signature_line",
+    "table",
+    "table_wrapper",
+    "td",
+    "th",
+    "title",
+    "watermark",
+    "zebra_row",
+)
+
 PAPERFORMAT_XML_IDS = {
     "a4": "dynamic_pdf_report_builder.paperformat_dynamic_report_a4",
     "a5": "dynamic_pdf_report_builder.paperformat_dynamic_report_a5",

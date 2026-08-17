@@ -5,7 +5,7 @@
             t-if="block.is_active"
             class="dynamic-report-block"
             t-att-style="style['block'] + ' text-align: %s;' % get_block_alignment(block)"
-            t-att-dir="report_config.direction">
+            t-att-dir="direction">
             <t t-if="block.block_type in ['static_text', 'terms_conditions', 'note']">
                 <div
                     t-if="get_block_title(block)"
@@ -304,9 +304,9 @@
             </style>
 
             <div
-                t-attf-class="article page dynamic-pdf-report dynamic-pdf-#{report_config.layout_style}"
+                t-attf-class="article page dynamic-pdf-report dynamic-pdf-#{layout_style}"
                 t-att-style="style['article']"
-                t-att-dir="report_config.direction"
+                t-att-dir="direction"
                 t-att-data-oe-model="doc_model"
                 t-att-data-oe-id="doc_ids and doc_ids[0]"
                 t-att-data-oe-lang="docs and docs[0].env.context.get('lang')">
@@ -314,7 +314,7 @@
                     t-if="(report_config.show_company_logo and company.logo) or report_config.show_company_name or report_config.show_report_title"
                     class="dynamic-pdf-header dynamic-report-header"
                     t-att-style="style['header']"
-                    t-att-dir="report_config.direction">
+                    t-att-dir="direction">
                     <div t-if="report_config.show_company_logo and company.logo" class="dynamic-report-logo-section">
                         <img
                             class="dynamic-pdf-logo dynamic-report-logo"
@@ -332,7 +332,7 @@
                     <h2 t-if="report_config.show_report_title" class="dynamic-pdf-title dynamic-report-title" t-att-style="style['title']">
                         <span t-out="report_config.report_title or report_config.name"/>
                     </h2>
-                    <div class="dynamic-report-separator" t-att-style="'border-top: 1px solid %s;' % report_config.border_color"/>
+                    <div class="dynamic-report-separator" t-att-style="'border-top: 1px solid %s;' % border_color"/>
                 </div>
 
                 <t t-if="not line_section_data">
@@ -382,7 +382,7 @@
                                             <td
                                                 t-att-colspan="len(field_lines) + len(main_formulas)"
                                                 class="dynamic-report-group-header"
-                                                t-att-style="style['group_header_cell'] + get_group_indent_style(event['level'], report_config.direction)">
+                                                t-att-style="style['group_header_cell'] + get_group_indent_style(event['level'], direction)">
                                                 <span t-out="event['label']"/>: <span t-out="event['value']"/>
                                             </td>
                                         </tr>
@@ -400,7 +400,7 @@
                                             <td
                                                 t-att-colspan="len(field_lines) + len(main_formulas)"
                                                 class="dynamic-report-group-footer"
-                                                t-att-style="style['group_footer_cell'] + get_group_indent_style(event['level'], report_config.direction)">
+                                                t-att-style="style['group_footer_cell'] + get_group_indent_style(event['level'], direction)">
                                                 <span t-out="get_totals_line(event['totals'], aggregate_definitions, 'Subtotal')"/>
                                             </td>
                                         </tr>
@@ -470,7 +470,7 @@
                             <div
                                 t-if="event['type'] == 'group_header'"
                                 class="dynamic-report-group-header"
-                                t-att-style="style['group_header'] + get_group_indent_style(event['level'], report_config.direction)">
+                                t-att-style="style['group_header'] + get_group_indent_style(event['level'], direction)">
                                 <span t-out="event['label']"/>: <span t-out="event['value']"/>
                             </div>
                             <t t-if="event['type'] == 'record'">
@@ -480,7 +480,7 @@
                             <div
                                 t-if="event['type'] == 'group_footer' and aggregate_definitions"
                                 class="dynamic-report-group-footer"
-                                t-att-style="style['group_footer'] + get_group_indent_style(event['level'], report_config.direction)">
+                                t-att-style="style['group_footer'] + get_group_indent_style(event['level'], direction)">
                                 <span t-out="get_totals_line(event['totals'], aggregate_definitions, 'Subtotal')"/>
                             </div>
                         </t>
@@ -499,7 +499,7 @@
                 t-if="report_config.show_footer or get_blocks(blocks_by_position, 'footer_area')"
                 class="footer dynamic-pdf-footer"
                 t-att-style="style['footer'] + (' margin-top: 0; padding-top: 2px; font-size: 9px;' if get_blocks(blocks_by_position, 'footer_area') else '')"
-                t-att-dir="report_config.direction">
+                t-att-dir="direction">
                 <div t-if="get_blocks(blocks_by_position, 'footer_area')" class="dynamic-pdf-footer-blocks">
                     <t t-set="doc" t-value="primary_doc"/>
                     <t t-set="position" t-value="'footer_area'"/>
@@ -508,7 +508,7 @@
                 <table t-if="report_config.show_footer" style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="width: 55%; vertical-align: top;">
-                            <span t-if="report_config.footer_text" t-out="report_config.footer_text"/>
+                            <span t-if="footer_text" t-out="footer_text"/>
                             <span t-if="template_preset_label">
                                 <br/>
                                 Generated from template: <span t-out="template_preset_label"/>

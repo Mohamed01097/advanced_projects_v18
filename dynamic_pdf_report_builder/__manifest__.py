@@ -1,6 +1,6 @@
 {
     "name": "Dynamic PDF Report Builder",
-    "version": "18.0.1.4.0",
+    "version": "18.0.1.4.1",
     "author": "MyAdvancedProjects",
     "category": "Technical",
     "summary": "No-code builder for simple dynamic PDF reports",
