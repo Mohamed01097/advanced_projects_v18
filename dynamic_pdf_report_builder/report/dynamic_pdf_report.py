@@ -15,7 +15,6 @@ from ..const import (
     BLOCK_POSITIONS,
     FORMULA_FIELD_TYPES,
     GROUP_FIELD_TYPES,
-    REPORT_TEMPLATE_XML_ID,
 )
 
 
@@ -28,13 +27,15 @@ class ReportDynamicPdfReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        report_action = self.env["ir.actions.report"]._get_report_from_name(REPORT_TEMPLATE_XML_ID)
-        report_config = report_action.dynamic_pdf_report_id
-        if not report_config:
-            report_config = self.env["dynamic.pdf.report"].sudo().search(
-                [("report_action_id", "=", report_action.id)],
-                limit=1,
-            )
+        report_config = (data or {}).get("report_config")
+        if (
+            not report_config
+            or not hasattr(report_config, "_name")
+            or report_config._name != "dynamic.pdf.report"
+        ):
+            report_config = self.env["dynamic.pdf.report"]
+        else:
+            report_config = report_config.sudo().exists()
         if not report_config:
             raise UserError(_("Unable to find the dynamic report configuration for this report action."))
         if not report_config.model_name or report_config.model_name not in self.env:

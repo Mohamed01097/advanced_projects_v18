@@ -854,9 +854,19 @@ class DynamicPdfReport(models.Model):
     def _get_or_create_report_action(self):
         self.ensure_one()
         ReportAction = self.env["ir.actions.report"].sudo()
-        action = self.report_action_id.sudo().exists()
+        action = ReportAction.search([("dynamic_pdf_report_id", "=", self.id)], limit=1)
         if not action:
-            action = ReportAction.search([("dynamic_pdf_report_id", "=", self.id)], limit=1)
+            candidate = self.report_action_id.sudo().exists()
+            candidate_owners = self.search_count([("report_action_id", "=", candidate.id)]) if candidate else 0
+            if (
+                candidate
+                and candidate_owners <= 1
+                and (
+                    not candidate.dynamic_pdf_report_id
+                    or candidate.dynamic_pdf_report_id.id == self.id
+                )
+            ):
+                action = candidate
 
         action_vals = self._prepare_report_action_vals()
         if action:
